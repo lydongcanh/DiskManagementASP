@@ -1,0 +1,290 @@
+﻿
+@{
+    ViewBag.Title = "Danh Sách Từ Chối";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Linq
+@using Ehr.Common.Constraint
+@using Ehr.Models
+@using Ehr.Common.UI;
+@using System.ComponentModel.DataAnnotations;
+@using Ehr.Auth;
+@model IEnumerable<Ehr.Models.Questionnaire>
+@{
+    var userid = User.UserId;
+    Ehr.Data.EhrDbContext context = new Ehr.Data.EhrDbContext();
+    var user = (from c in context.Users where c.Id == userid select c).FirstOrDefault();
+    bool iscentral = user.IsCentral;
+}
+<style type="text/css">
+    #approvePanel, #rejectPanel, #restorePanel {
+        margin-top: 10%;
+        transform: scale(0.9)
+    }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="card card-default color-palette-box">
+            <div class="row card-header" style="border:none;">
+                <div class="col-sm-6">
+                    <h5>
+                        Danh sách từ chối
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Danh sách từ chối</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Reject", "QuestionnaireReview", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <div class="card-tools float-right">
+                        <div class="input-group input-group-sm float-right">
+                            <div class="input-group-append" style="margin-top:5px">
+                                Kích thước trang&nbsp;&nbsp;
+                            </div>
+                            @Html.DropDownList("size", (List<SelectListItem>)ViewBag.size, new { @onchange = "this.form.submit();", @class = "form-control custom-select", @style = "border-radius:5px;width:55px;" })&nbsp;&nbsp;
+                            @Html.Hidden("page", (object)ViewBag.page)
+                            @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                            @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                            @Html.Hidden("size", (object)ViewBag.pageSize)
+                            @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm...", @style = "border-radius:5px;width:200px" })
+                            @Html.Hidden("page", (object)ViewBag.page)
+                            @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                            @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                            @Html.Hidden("size", (object)ViewBag.pageSize)
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- /.card-tools -->
+            <div class="card-body table-responsive p-0 zoom-table" style="min-height:500px">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            STT
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width: 25%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int dem = ViewBag.fromItem;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+                                        <tr>
+                                            @{
+                                                var state = i.State.GetAttribute<DisplayAttribute>().Name;
+                                            }
+                                            <td>
+                                                @dem
+                                                @{dem++;}
+                                            </td>
+                                            <td>
+                                                @i.D_u_th_i_gian
+                                            </td>
+                                            <td>
+                                                @i.A1__Product_origin
+                                            </td>
+                                            <td>
+                                                @i.A2__Product_code
+                                            </td>
+                                            <td>
+                                                @i.A3__Product_name
+                                            </td>
+                                            <td>
+                                                @i.A4__Company
+                                            </td>
+                                            <td>
+                                                @i.A5__Type_of_product
+                                            </td>
+                                            <td>
+                                                @i.A7__Volume_of_product
+                                            </td>
+                                            <td>
+                                                @i.A8__Unit_of_volume_of_product
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-red">@state</span>
+                                            </td>
+                                            <td class="project-actions text-right">
+                                                <a href="@Url.Action("Detail", new { id = i.Id })" class="btn btn-or-cus btn-sm">
+                                                    <i class="fas fas fa-folder"></i>
+                                                    <span>Xem</span>
+                                                </a>
+                                                @if (iscentral)
+                                                {
+                                                    <button type="button" class="btn bg-teal btn-sm" onclick="Approve(@i.Id);">
+                                                        <i class="fas fa-check-circle">
+                                                        </i>&nbsp;<span>Duyệt</span>
+                                                    </button>
+                                                    <button type="button" class="btn bg-navy btn-sm" onclick="Restore(@i.Id);">
+                                                        <i class="fas fa-trash-restore">
+                                                        </i>&nbsp;<span>Khôi phục</span>
+                                                    </button>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @Html.Raw(ViewBag.paging)
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<div class="modal fade" id="approvePanel" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- card body-->
+            <div class="card-body">
+                <input type="hidden" id="idapprove" name="idapprove" />
+                <br />
+                <h2>Bạn đồng ý duyệt dữ liệu ?</h2>
+                <br />
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer" style="background-color:white">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn bg-teal float-right" id="submitApprove">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="restorePanel" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- card body-->
+            <div class="card-body">
+                <input type="hidden" id="idrestore" name="idreject" />
+                <br />
+                <h2>Bạn đồng ý khôi phục dữ liệu ?</h2>
+                <br />
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer" style="background-color:white">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn bg-teal float-right" id="submitRestore">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img width="75px" height="75px" src="~/Content/img/loading6.gif" />
+</div>
+
+@Scripts.Render("~/Content/admin-lte/plugins/datatables/jquery.dataTables.min.js")
+@Scripts.Render("~/Content/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js")
+@Styles.Render("~/Content/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css")
+@{
+    var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
+}
+<script>
+    var flag = "/QuestionnaireReview/Reject"
+</script>
+<script>
+    $(document).ajaxStart(function () {
+        $("#ezloader").css("display", "block");
+    });
+
+    $(document).ajaxComplete(function () {
+        $("#ezloader").css("display", "none");
+    });
+
+        function Approve(id) {
+        if (id) {
+            $("#idapprove").val(id);
+            $("#approvePanel").modal("show");
+        }
+    }
+    $("#submitApprove").click(function () {
+        var id = $("#idapprove").val();
+        if (id) {
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: id
+                }),
+                url: "@Url.Action("Approve", "QuestionnaireReview")",
+                success: function (item) {
+                    if (item.success) {
+                        toastr.success(item.message);
+                        setTimeout(function () { location.reload(); }, 800);
+                    } else {
+                        toastr.error(item.message);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    });
+
+    function Restore(id) {
+        if (id) {
+            $("#idrestore").val(id);
+            $("#restorePanel").modal("show");
+        }
+    }
+    $("#submitRestore").click(function (){
+        var id = $("#idrestore").val();
+        if (id) {
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: id
+                }),
+                url: "@Url.Action("Restore", "QuestionnaireReview")",
+                success: function (item) {
+                    if (item.success) {
+                        toastr.success(item.message);
+                        setTimeout(function () { location.reload(); }, 800);
+                    } else {
+                        toastr.error(item.message);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    })
+
+</script>

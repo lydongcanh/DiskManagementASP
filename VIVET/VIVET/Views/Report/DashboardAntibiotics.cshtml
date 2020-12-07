@@ -1,0 +1,16 @@
+﻿@using Ehr.ViewModels;
+@using Ehr.Common.Tools;
+@model IEnumerable<ReportNew>
+@{
+    
+    var myChart = new Chart(width: 1024, height: 680, theme:Reporter.GetMyCustomTheme());
+    myChart.AddTitle("Thống kê lượng kháng sinh đã bán");
+
+
+    myChart.AddSeries("X", chartType: "column",
+            xValue: Model, xField: "X", 
+            yValues: Model, yFields: "Y");
+    myChart.SetXAxis("Kháng sinh");
+    myChart.SetYAxis("Trọng lượng (kg)");    
+    myChart.Write();
+}

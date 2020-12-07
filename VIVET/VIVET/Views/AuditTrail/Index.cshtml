@@ -1,0 +1,246 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Ehr.Data;
+@using Ehr.Common.Constraint
+@using Ehr.Models
+@model IEnumerable<Ehr.Models.AuditTrail>
+
+<style type="text/css">
+    .col-sm-4 {
+        text-align: right;
+        padding-top: 5px;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Lịch sử thao tác dữ liệu
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Lịch sử thao tác dữ liệu</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Index", "AuditTrail", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <div class="card-tools">
+                        <div class="row">
+                            <div class="input-group input-group-sm col-lg-6">
+                                <div class="input-group-append" style="margin-top:5px">
+                                    Kích thước trang&nbsp;&nbsp;
+                                </div>
+                                @Html.DropDownList("size", (List<SelectListItem>)ViewBag.size, new { @onchange = "this.form.submit();", @class = "form-control custom-select", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @Html.Hidden("size", (object)ViewBag.pageSize)
+                            </div>
+                            <div class="input-group input-group-sm col-lg-6">
+                                @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm ...", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @Html.Hidden("size", (object)ViewBag.pageSize)
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+            <div class="card-body table-responsive p-0">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            #
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width: 10%;">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableAudit">
+                                    @{
+                                        int dem = ViewBag.fromItem;
+                                    }
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem
+                                                @{dem++;}
+                                            </td>
+                                            <td>
+                                                @item.DateTimeStamp
+                                            </td>
+                                            <td>
+                                                @item.Username
+                                            </td>
+                                            <td>
+                                                @if (@item.AuditActionType == AuditActionType.Create)
+                                                {
+                                                    <p>Tạo mới</p>
+                                                }
+                                                else if (item.AuditActionType == AuditActionType.Update)
+                                                {
+                                                    <p>Chỉnh sửa</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>Xoá</p>
+                                                }
+                                            </td>
+                                            <td>
+                                                @item.KeyFieldID
+                                            </td>
+
+                                            <td>
+                                                @item.DataModel
+                                            </td>
+                                            <td class="text-right">
+                                                <button class="btn btn-or-cus btn-sm" onClick="GetAuditHistory(@item.Id) " data-toggle="modal" data-target="#myModal">
+                                                    <i class="fas fa-folder"></i>
+                                                    <span>Xem</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @Html.Raw(ViewBag.paging)
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="AddStaffModal" aria-hidden="true" style="padding-top:5%">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-navy">
+                <h5 class="modal-title">Chi tiết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body table-responsive p-0" id="audit"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-navy" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.content-wrapper -->
+<script>
+    var flag = "/AuditTrail/Index";
+    // Fortmat TimeExecute
+    function jsonToDate(date, format) {
+        return moment(date).format(format);
+    }
+    window.onload = function () {
+        $('#daterange-btn').daterangepicker(
+            {
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 ngày trước': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function (start, end) {
+                var a1 = jsonToDate(start, 'MM/DD/YYYY HH:mm:ss a')
+                var a2 = jsonToDate(end, 'MM/DD/YYYY HH:mm:ss a')
+                console.log(a1 + a2);
+                getDatabyDate(a1, a2)
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            }
+        );
+    }
+
+    function GetAuditHistory(Id) {
+        $("#audit").html("");
+        var AuditDisplay = "<table class='table table-bordered' table-hover dataTable cellpadding='5'>";
+        $.getJSON("/AuditTrail/Detail/" + Id, function (AuditTrail) {
+            if (AuditTrail.AuditActionType != null) {
+                AuditDisplay = AuditDisplay + "<tr class='bg-gray-light'><td>Ngày: " + AuditTrail.DateTimeStamp + "</td>";
+                AuditDisplay = AuditDisplay + "<td>Người dùng: " + AuditTrail.Username + "</td>";
+                if (AuditTrail.AuditActionType == 1) {
+                    AuditDisplay = AuditDisplay + "<td>Hành động: " + "Tạo mới" + "</td></tr>";
+                } else if (AuditTrail.AuditActionType == 2) {
+                    AuditDisplay = AuditDisplay + "<td>Hành động: " + "Chỉnh sửa" + "</td></tr>";
+                } else {
+                    AuditDisplay = AuditDisplay + "<td>Hành động: " + "Xoá" + "</td ></tr > ";
+                }
+                AuditDisplay = AuditDisplay + "<tr class='text-primary'><th>Thuộc tính</th><th>Trước thay đổi</th><th>Sau thay đổi</th></tr>";
+            }
+            if (AuditTrail.AuditActionType == 1) {
+                for (var j = 0; j < AuditTrail.Changes.length; j++) {
+                    AuditDisplay = AuditDisplay + "<tr>";
+                    AuditDisplay = AuditDisplay + "<td>" + AuditTrail.Changes[j].FieldName + "</td>";
+                    AuditDisplay = AuditDisplay + "<td class='ellipsis'></td>";
+                    AuditDisplay = AuditDisplay + "<td class='ellipsis'>" + AuditTrail.Changes[j].ValueAfter + "</td>";
+                    AuditDisplay = AuditDisplay + "</tr>";
+                }
+            } else if (AuditTrail.AuditActionType == 2 || AuditTrail.AuditActionType == 3) {
+                for (var j = 0; j < AuditTrail.Changes.length; j++) {
+                    AuditDisplay = AuditDisplay + "<tr>";
+                    AuditDisplay = AuditDisplay + "<td>" + AuditTrail.Changes[j].FieldName + "</td>";
+                    AuditDisplay = AuditDisplay + "<td class='ellipsis'>" + AuditTrail.Changes[j].ValueBefore + "</td>";
+                    AuditDisplay = AuditDisplay + "<td class='ellipsis'>" + AuditTrail.Changes[j].ValueAfter + "</td>";
+                    AuditDisplay = AuditDisplay + "</tr>";
+                }
+            }
+
+            AuditDisplay = AuditDisplay + "</table>" >
+
+            $("#audit").html(AuditDisplay);
+            $("#myModal").modal('show');
+        });
+        }
+
+    function getDatabyDate(startdate, enddate) {
+        $.ajax({
+            url: "/AuditTrail/GetByDate",
+            data: {
+                "startdate": startdate,
+                "enddate": enddate,
+            },
+            type: 'POST',
+            datatype: 'json'
+        });
+    }
+</script>

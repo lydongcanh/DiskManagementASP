@@ -1,0 +1,205 @@
+﻿
+@{
+                ViewBag.Title = "Thêm dữ liệu tham chiếu";
+                Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using Ehr.Data;
+@using Ehr.Models;
+@using Ehr.Common.UI;
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="card card-default color-palette-box">
+            <div class="row card-header" style="border:none;">
+                <div class="col-sm-6">
+                    <h5>
+                        Thêm dữ liệu tham chiếu
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Thêm dữ liệu tham chiếu</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <form id="form-create">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="form-group">
+                            <label>Chọn loài</label>
+                            <div>
+                                <select id="Pet" class="form-control" name="Pet">
+                                    @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ListPet)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên thú nuôi</label>
+                            <div>
+                                <input id="PetNameDetail" type="text" name="PetNameDetail" class="form-control" placeholder="Vd : Gà đẻ, Vịt thịt ..">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label>Tuần tuổi</label>
+                                <div>
+                                    <input id="Week" type="number" name="Week" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Ngày tuổi - Từ</label>
+                                <div>
+                                    <input id="Age_Min" type="number" name="Age_Min" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đến</label>
+                                <div>
+                                    <input id="Age_Max" type="number" name="Age_Max" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label>Trọng lượng min (g/con)</label>
+                                <div>
+                                    <input id="Volume_Min" type="number" name="Volume_Min" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Trọng lượng max (g/con)</label>
+                                <div>
+                                    <input id="Volume_Max" type="number" name="Volume_Max" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Trọng lượng trung bình (g/con)</label>
+                                <div>
+                                    <input id="Volume_AVG" type="number" name="Volume_AVG" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label> Lượng ăn min (g/con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Food_Min" type="number" name="Volume_Food_Min" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Lượng ăn max (g/con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Food_Max" type="number" name="Volume_Food_Max" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Lượng ăn tb (g/con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Food_AVG" type="number" name="Volume_Food_AVG" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label> Lượng nước hấp thu min (ml/ con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Water_Min" type="number" name="Volume_Water_Min" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Lượng nước hấp thu max (ml/ con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Water_Max" type="number" name="Volume_Water_Max" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Lượng nước hấp thu tb (ml/con/ngày)</label>
+                                <div>
+                                    <input id="Volume_Water_AVG" type="number" name="Volume_Water_AVG" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer" style="background-color:white">
+                        <input type="submit" value="Lưu dữ liệu" class="btn bg-navy float-right" />
+                        <a class="btn btn-warning float-left" href="/Reference/Index">Huỷ thao tác</a>
+                    </div>
+                </div>
+
+            </form>
+        </div><!-- /.container-fluid -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src="~/Content/img/loader.gif" />
+</div>
+<!-- /.content-wrapper -->
+
+@Scripts.Render("~/Content/admin-lte/plugins/datatables/jquery.dataTables.min.js")
+@Scripts.Render("~/Content/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js")
+@Styles.Render("~/Content/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css")
+@{
+    var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
+}
+<script>
+    var flag = "/Reference/Index";
+</script>
+<script>
+    $(function () {
+        $("#form-create").submit(function (e) {
+            e.preventDefault();
+            var serializedForm = $(this).serializeArray();
+            var PetNameDetail = serializedForm.some(val => val.name == "PetNameDetail" && val.value.trim() !== "");
+            if (PetNameDetail !== "") {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    data: serializedForm,
+                    url: "/Reference/New",
+                    success: function (item) {
+                        if (item.success) {
+                            toastr.success(item.message);
+                            setTimeout(function () {
+                                window.location.href = window.location.origin + "/Reference/Index";
+                            }, 1000);
+                        } else {
+                            toastr.error(item.message);
+                        }
+
+                    },
+                    error: function (err) {
+                        setTimeout(function () {
+                            toastr.error("Thêm dữ liệu không thành công", "Failed");
+                        }, 1000);
+                        console.log(err);
+                    }
+                });
+            } else {
+                if (!PetNameDetail)
+                    toastr.warning("Bạn chưa nhập tên thú nuôi");
+
+            }
+
+        });
+
+    });
+
+</script>
+
+<!-- fullCalendar -->

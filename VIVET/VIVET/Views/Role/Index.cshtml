@@ -1,0 +1,281 @@
+﻿@{
+    ViewBag.Title = "Danh Sách Nhóm Quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.Common.Constraint;
+@using Ehr.Bussiness;
+@model IEnumerable<Role>
+@{
+    EhrDbContext db = new EhrDbContext();
+
+      
+}
+<div class="modal fade" id="AddRole" role="dialog" aria-labelledby="AddRole" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success" >
+                <b> Thêm nhóm quyền</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (@Html.BeginForm("Role_Add", "Role", FormMethod.Post, new { @role = "form" }))
+            {
+            <div class="card-body">
+
+                <div class="form-group">
+                    <label>Tên nhóm quyền</label>
+                    <input name="RoleName" value="" class="form-control" placeholder="Nhập tên nhóm quyền" required />
+                </div>
+                <table>
+                    <tr>
+                        <td style="width:290px;">
+                            <label>Cho phép có hiệu lực</label>
+                            @{
+                                string isactivated = "checked";
+                                string isroot = "";
+                            }
+                           
+                        </td>
+                        <td><input @isactivated id="RoleStatus" name="RoleStatus" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" /></td>
+                    </tr>
+                    <tr>
+                        <td><label>Quyền cao nhất</label> </td>
+                        <td><input @isroot id="IsRoot" name="IsRoot" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" /></td>
+                    </tr>
+                </table>
+
+                <div class="">
+
+                    @{
+                        var listPermession = db.Permissions.ToList();
+                    }
+                </div>
+                <label>Chọn các quyền:</label>
+                <div class="col-12">                    
+                    @{
+                        int tempCount = 0; //biến đếm để chia table ra là 2 cột
+                        string html = "";// xuất giao diện table
+                        string name = " name='Permission"; // name của permission cần lấy
+                    }
+
+                    @foreach (var item in listPermession)
+                    {
+
+
+
+
+                        if (tempCount % 2 == 0)
+                        {
+                            html += "<tr>";
+                        }
+                        html += "<td><input type='checkbox'" + name + item.Id + "'" + "value=" + "'" + item.Id + "'" + "/>&nbsp;" + item.PermissionName + "</td>";
+
+                        if (tempCount % 2 > 0)
+                        {
+                            html += "</tr>";
+                        }
+
+                        tempCount++;
+
+
+
+
+                    }
+                    @{
+                        if (tempCount % 2 > 0)
+                        {
+                            html += "<td>&nbsp;</td></tr>";
+                        }
+                    }
+
+
+                    @{html = "<table class='table table-bordered' style='width:100%;'>" + html + "</table>";}
+
+                    @Html.Raw(html)
+
+                </div>
+
+
+            </div>
+                <div class="card-footer" style="background-color:white">
+                    
+                    <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
+                    <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Nhóm quyền
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Nhóm quyền</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Index", "Role", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <button type="button" class="btn bg-success btn-sm" data-toggle="modal" data-target="#AddRole">
+                        <i class="fas fa-plus">
+                        </i>
+                        Thêm nhóm quyền
+                    </button>
+                    <div class="card-tools">
+                        <div class="row">
+                            <div class="input-group input-group-sm col-lg-6">
+                                <div class="input-group-append">
+
+                                </div>
+                                @*@Html.DropDownList("size", (List<SelectListItem>)ViewBag.size, new { @onchange = "this.form.submit();" })*@
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @*@Html.Hidden("size", (object)ViewBag.pageSize)*@
+                            </div>
+                            <div class="input-group input-group-sm col-lg-12">
+                                @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Nhóm Quyền", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @*@Html.Hidden("size", (object)ViewBag.pageSize)*@
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- /.card-tools -->
+
+            <div class="card-body p-0 ">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+
+                                    <tr>
+                                        <th style="width: 1%">
+                                            #
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width:15%">
+                                        </th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    @{
+
+                                        int dem = 1;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @dem
+                                            </td>
+                                            @{dem++;}
+                                            <td>
+                                                <a>
+                                                    @i.RoleName
+
+
+
+                                                </a>
+                                            </td>
+
+                                            <td>
+                                                <a>
+                                                    @{
+                                                        var rStatus = "Khóa";
+                                                        if (i.RoleStatus == RoleStatus.ACTIVATED)
+                                                        {
+                                                            rStatus = "Mở";
+                                                        }
+                                                        @rStatus;
+                                                    }
+
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @{
+                                                        var rRoot = "Không";
+                                                        if (i.IsRoot == YesNo.YES)
+                                                        {
+                                                            rRoot = "Có";
+                                                        }
+                                                        @rRoot;
+                                                    }
+                                                </a>
+                                            </td>
+
+                                            <td class="project-actions text-right">
+                                                <a class="btn btn-sm btn-or-cus" href="../../Role/Role_Detail?id=@i.Id">
+                                                    <i class="fas fa-folder">
+                                                    </i>
+                                                    Xem
+                                                </a>
+                                                <a class="btn btn-success btn-sm" href="../../Role/Role_Update?id=@i.Id">
+                                                    <i class="fas fa-pencil-alt">
+                                                    </i>
+                                                    Sửa
+                                                </a>
+
+                                            </td>
+                                        </tr>
+
+
+                                    }
+
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @*@Html.Raw(ViewBag.paging)*@
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<script>
+    var flag = "/Role/Index";
+</script>
+
+

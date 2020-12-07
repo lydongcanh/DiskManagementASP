@@ -1,0 +1,196 @@
+﻿@{
+    ViewBag.Title = "Đặt lại mật khẩu cho người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<User>
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.Common.Constraint;
+@using Ehr.Bussiness;
+
+@{
+    EhrDbContext db = new EhrDbContext();
+}
+@Scripts.Render("~/Scripts/validation/msgbox.js")
+@Scripts.Render("~/Scripts/validation/resetpass.js")
+
+<div class="modal fade" id="resetPWD" role="dialog" aria-labelledby="resetPWD" aria-hidden="true" style="margin-top:8%">
+    <div class="modal-dialog p-2" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <b> Đặt lại mật khẩu</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Ajax.BeginForm("PasswordReset", "User", new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                HttpMethod = "POST",
+                LoadingElementId = "ezloader",
+                OnSuccess = "passWDSuccess()",
+                OnFailure = "passWDFailed()"
+            }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="userid" id="userid" value="" class="form-control" />
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Mật khẩu mới</label>
+                        <input type="password" class="form-control" id="NewPassword" name="NewPassword" placeholder="Mật khẩu mới">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Xác nhận mật khẩu mới</label>
+                        <input type="password" class="form-control" id="ConfirmedPassword" name="ConfirmedPassword" placeholder="Xác nhận lại mật khẩu mới">
+                    </div>
+                </div>
+                <div class="card-footer" style="background-color:white">
+                    <button type="submit" class="btn bg-success float-right" onclick="return validateSubmission();">Đặt lại mật khẩu</button>
+                    <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>
+                </div>
+            }
+            <div id="divMessage"></div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Đặt lại mật khẩu
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Đặt lại mật khẩu</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("ResetPWD", "User", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <span class="text-danger">@ViewBag.Message</span>
+                    <div class="card-tools">
+                        <div class="row">
+                            <div class="input-group input-group-sm col-lg-12">
+                                @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm người dùng", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @*@Html.Hidden("size", (object)ViewBag.pageSize)*@
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- /.card-tools -->
+            <div class="card-body p-0 ">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            #
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width:15%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+
+                                        int dem = 1;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem
+                                            </td>
+                                            @{dem++;}
+                                            <td>
+                                                <a>
+                                                    @i.Username
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.FullName
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.Address
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @{
+                                                        var rStatus = "Chưa kích hoạt";
+                                                        if (i.IsActive)
+                                                        {
+                                                            rStatus = "Đang kích hoạt";
+                                                        }
+                                                        @rStatus;
+                                                    }
+                                                </a>
+                                            </td>
+
+                                            <td class="project-actions text-right">
+                                                <a class="btn btn-success btn-sm" href="#" onclick="loadPWPanel(@i.Id);">
+                                                    <i class="fas fa-key">
+                                                    </i>
+                                                    Đặt lại 
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @*@Html.Raw(ViewBag.paging)*@
+                </div>
+            </div>
+            <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+    </section>
+</div>
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src="~/Content/img/loader.gif" />
+</div>
+<!-- /.content -->
+<script>
+    var flag = "/User/ResetPWD";
+</script>

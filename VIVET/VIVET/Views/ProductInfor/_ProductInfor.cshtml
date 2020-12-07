@@ -1,0 +1,189 @@
+﻿@using Ehr.Common.UI;
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.ViewModels;
+
+
+@using Ehr.Common.Constraint;
+@using Ehr.Common.Tools;
+@model List<ProductInfor>
+<div class="card-header">
+    <nav aria-label="Page">
+        <ul class="pagination justify-content-end text-sm m-0">
+            @{
+                            /**/
+
+                            if (Model.Count > 0)
+                            {
+                                <li class='page-item'><a class='page-link'>@ViewBag.Label Trang </a></li>
+                                @Html.Raw(ViewBag.Paging)
+                            }
+            }
+        </ul>
+    </nav>
+</div>
+<div class="card-body pb-0 zoom-cus">
+    <div class="card-body table-responsive p-0" style="min-height:500px">
+        @{
+
+            if (Model.Count == 0)
+            {
+                @Html.Raw("Không tìm thấy.");
+            }
+            else
+            {
+                <div>
+                    <table class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th style="width:10px;">
+                                    #
+                                </th>
+                                <th>
+                                    Ngày
+                                </th>
+                                <th>
+                                    Mã SP
+                                </th>
+                                <th>
+                                    Thú nuôi
+                                </th>
+                                <th>
+                                    Số lượng
+                                </th>
+                                <th>
+                                    TLTB
+                                </th>
+                                <th>
+                                    Sản phẩm
+                                </th>
+                                <th>
+                                    Kháng sinh
+                                </th>
+                                <th>
+                                    Lượng sản phẩm
+                                </th>                                                      
+                                <th>
+                                    Trọng lượng sản phẩm
+                                </th>
+                                <th>
+                                    Đơn vị
+                                </th>
+                                <th>
+                                    Lượng kháng sinh/sản phẩm
+                                </th>
+                                  <th>
+                                    Đơn vị
+                                </th> 
+                                <th>
+                                    Người thực hiện
+                                </th>
+                                <th>
+                                    Có đơn thuốc?
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="tableAudit">
+
+                            @{
+                                var @count = 0;
+                            }
+                            @foreach (ProductInfor pro in Model)
+                            {
+                                var date = pro.CollectedDate;
+                                if (date == null || date == DateTime.MinValue) { date = pro.DateStamp; }
+                                count++;
+                                <tr>
+                                    <td>
+                                        @count
+                                    </td>
+                                    <td>
+                                        @DataConverter.DateTimeFull(date)
+                                    </td>
+                                    <td>
+                                        @pro.Code
+                                    </td>
+                                    <td>
+                                        @pro.Pet
+                                    </td>
+                                    <td>
+                                        @pro.AmountPet
+                                    </td>
+                                    <td>
+                                        @pro.Volume_AVG
+                                    </td>
+                                    <td>
+                                        @pro.Product
+                                    </td>
+                                    <td>
+                                        @pro.Antimicrobial
+                                    </td>
+                                    <td>
+                                        @pro.AmountProduct
+                                    </td>
+                                    <td>
+                                        @pro.VolumePackage
+                                    </td>
+                                     <td>
+                                        @pro.UnitPackage
+                                    </td>
+                                    <td>
+                                        @pro.AB_Amount
+                                    </td>                                                            
+                                  <td>
+                                        @pro.AB_Unit
+                                    </td>
+                                    <td>
+                                        @if (pro.UserId != null && pro.UserId > 0)
+                                        {
+                                            EhrDbContext db = new EhrDbContext();
+                                            var user = db.Users.Where(x => x.Id == pro.UserId).FirstOrDefault();
+
+                                            if (user != null)
+                                            {
+                                                @user.Username
+                                            }
+                                        }
+                                    </td>
+                                    @{
+                                        var IsPrescription = "";
+                                        if (pro.IsPrescription == true)
+                                        {
+                                            IsPrescription = "Có";
+                                        }
+                                        else
+                                        {
+                                            IsPrescription = "Không";
+                                        }
+                                    }
+                                    <td>
+                                        @IsPrescription
+                                    </td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            }
+
+        }
+    </div>
+</div>
+
+<div class="card-footer">
+    <nav aria-label="Page">
+        <ul class="pagination justify-content-center m-0">
+            @{
+                if (Model.Count > 0)
+                {
+                    <li class='page-item'><a class='page-link'>Trang </a></li>
+                    @Html.Raw(ViewBag.Paging)
+                }
+            }
+        </ul>
+    </nav>
+</div>
+

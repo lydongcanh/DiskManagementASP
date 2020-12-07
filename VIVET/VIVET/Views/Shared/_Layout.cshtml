@@ -1,0 +1,488 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - VIVET4.0</title>
+    <link href="~/Content/Candidate/w3.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="~/Content/admin-lte/plugins/jquery/jquery.min.js"></script>
+
+    <!--fav icon-->
+    <link rel="icon" type="image/png" href="~/Content/img/smallicon.png" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link href="~/Content/ionicons.min.css" rel="stylesheet" />
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Content/admin-lte/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/daterangepicker/daterangepicker.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/summernote/summernote-bs4.css">
+    <link href="~/Content/Candidate/rating.css" rel="stylesheet" />
+    <link href="~/Content/admin-lte/plugins/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" />
+    <!-- Select2 -->
+
+    <link href="~/Content/admin-lte/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/admin-lte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+
+    <!-- Google Font: Source Sans Pro -->
+    <link href="~/Content/googlefont-source-sans-pro.css" rel="stylesheet" />
+    <script src="~/Content/admin-lte/plugins/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
+    <link href="~/Content/admin-lte/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Content/admin-lte/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+    <link href="~/Content/admin-lte/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <script src="~/Content/admin-lte/plugins/toastr/toastr.min.js"></script>
+    <!-- Mail box -->
+    <link href="~/Content/admin-lte/plugins/summernote/summernote-bs4.css" rel="stylesheet" />
+    @Scripts.Render("~/Scripts/search-ajax.js")
+    @Scripts.Render("~/Scripts/utils.js")
+    @Scripts.Render("~/Scripts/jquery.validate.min.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.min.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+    <style>
+        @@media (min-width: 992px) {
+            .profile-update {
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+
+        a {
+            color: #14a33e;
+        }
+
+            a:hover {
+                color: #19632f;
+            }
+
+        .card, .card-header, .card-body {
+            border-radius: 0px;
+        }
+
+        .zoom-table {
+            zoom: 0.8;
+        }
+
+        #ezloader {
+            background: rgba(0, 0, 0, 0.3) none repeat scroll 0 0;
+            display: block;
+            height: 100%;
+            left: 0 !important;
+            padding: 2px;
+            position: fixed !important;
+            top: 0 !important;
+            width: 100%;
+            z-index: 9999;
+        }
+
+            #ezloader img {
+                left: 50%;
+                margin: -50px 0 0 -50px;
+                position: absolute;
+                top: 50%;
+            }
+
+        .content-wrapper {
+            padding: 20px;
+        }
+
+        input[type="text"], .form-control {
+            border-radius: 0px;
+            width: 100%;
+            padding-left: 8px;
+            padding-right: 5px;
+            margin: 0px 0px;
+            display: inline-block;
+            border: 0px solid #ccc;
+            box-sizing: border-box;
+            border: 1px solid rgb(211, 211, 211);
+        }
+
+        input[type=text]:focus, .form-control:focus {
+            border-radius: 0px;
+            margin: 0px 0px;
+            outline: 0;
+            outline: none;
+            border: 1px solid #14a33e;
+            -webkit-box-shadow: 0px 0px 23px -10px rgba(8,206,4,0.5);
+            box-shadow: 0px 0px 23px -10px rgba(8,206,4,0.5);
+        }
+
+        .dropdown-item:hover {
+            background-color: #14a33e;
+            color: #ffffff;
+        }
+
+        .select2-container .select2-selection--single {
+            border-radius: 0px;
+        }
+
+            .select2-container .select2-selection--single:focus {
+                border-radius: 0px;
+                margin: 0px 0px;
+                outline: 0;
+                outline: none;
+                border: 1px solid #14a33e;
+                -webkit-box-shadow: 0px 0px 23px -10px rgba(8,206,4,0.5);
+                box-shadow: 0px 0px 23px -10px rgba(8,206,4,0.5);
+            }
+        [class*=sidebar-light-] .nav-treeview > .nav-item > .nav-link.active, [class*=sidebar-light-] .nav-treeview > .nav-item > .nav-link.active:hover {
+            background-color: rgba(153, 229, 175, 0.65);
+            color: #212529;
+        }
+        [class*=sidebar-light-] .nav-treeview > .nav-item:hover > .nav-link {
+            background-color: rgba(152, 233, 175, 0.46);
+            color: #6b6b6b;
+        }
+        .nav-link:hover{
+            color:#dd7815;
+        }
+        .btn-or-cus {
+            background-color: #ef8a28;
+            color: white
+        }
+        .btn-or-cus:hover {
+            background-color: #dd7815;
+            color: white
+        }
+        .modal-div {
+            cursor: move;
+            position: absolute;
+            background: white;
+            border-radius: 0px;
+            display: none;
+            border: 1px solid #14a33e;
+            -webkit-box-shadow: 0px 0px 35px -10px rgba(3, 148, 0, 0.50);
+            box-shadow: 0px 0px 23px -10px rgba(2, 125, 0, 0.50);
+            z-index: 10000;
+            min-height: 310px;
+            max-height: 310px;
+            min-width: 350px;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed text-sm">
+    <div class="wrapper">
+        @Html.Partial("_Navbar")
+        @Html.Partial("_LeftMenu")
+        <div id="page-content">
+            @RenderBody()
+        </div>
+        @Html.Partial("_Footer")
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+
+    <!-- jQuery UI 1.11.4 -->
+    @*<script src="~/Content/admin-lte/plugins/jquery-ui/jquery-ui.min.js"></script>*@
+
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- Bootstrap 4 -->
+    <script src="~/Content/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    <script src="~/Content/admin-lte/plugins/chart.js/Chart.min.js"></script>
+    <!-- Sparkline -->
+    <script src="~/Content/admin-lte/plugins/sparklines/sparkline.js"></script>
+    <!-- JQVMap -->
+    <script src="~/Content/admin-lte/plugins/jqvmap/jquery.vmap.min.js"></script>
+    <script src="~/Content/admin-lte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="~/Content/admin-lte/plugins/jquery-knob/jquery.knob.min.js"></script>
+    <!-- daterangepicker -->
+    <script src="~/Content/admin-lte/plugins/moment/moment.min.js"></script>
+    <script src="~/Content/admin-lte/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/Content/admin-lte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Summernote -->
+    <script src="~/Content/admin-lte/plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="~/Content/admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/Content/admin-lte/dist/js/adminlte.js"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <!-- <script src="~/Content/admin-lte/dist/js/pages/dashboard.js"></script> -->
+    <!-- Select2 -->
+    <script type="text/javascript" src="~/Content/admin-lte/plugins/select2/js/select2.full.min.js"></script>
+
+    <!-- Bootstrap4 Duallistbox -->
+    <script src="~/Content/admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+    <!-- InputMask -->
+    <script src="~/Content/admin-lte/plugins/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+    <!-- bootstrap color picker -->
+    <script src="~/Content/admin-lte/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="~/Content/admin-lte/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+
+    <script src="~/Scripts/loadingoverlay.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="~/Content/admin-lte/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="~/Content/admin-lte/plugins/toastr/toastr.min.js"></script>
+    <!-- Page script -->
+    <script src="~/Content/admin-lte/plugins/summernote/summernote-bs4.min.js"></script>
+
+
+    <script src="~/Content/admin-lte/plugins/Scripts/jquery.signalR-2.4.1.min.js"></script>
+
+    <script>
+
+        // Store a copy of the fetch function
+        var _oldFetch = fetch;
+
+        // Create our new version of the fetch function
+        window.fetch = function () {
+
+            // Create hooks
+            var fetchStart = new Event('fetchStart', { 'view': document, 'bubbles': true, 'cancelable': false });
+            var fetchEnd = new Event('fetchEnd', { 'view': document, 'bubbles': true, 'cancelable': false });
+
+            // Pass the supplied arguments to the real fetch function
+            var fetchCall = _oldFetch.apply(this, arguments);
+
+            // Trigger the fetchStart event
+            document.dispatchEvent(fetchStart);
+
+            fetchCall.then(function () {
+                // Trigger the fetchEnd event
+                document.dispatchEvent(fetchEnd);
+            }).catch(function () {
+                // Trigger the fetchEnd event
+                document.dispatchEvent(fetchEnd);
+            });
+
+            return fetchCall;
+        };
+
+
+        document.addEventListener('fetchStart', function () {
+            $("#ezloader").show();
+        });
+
+        document.addEventListener('fetchEnd', function () {
+            $("#ezloader").hide();
+        });
+
+
+        Filevalidation = () => {
+            let fi = document.querySelector('.file');
+            console.log(fi);
+            // Check if any file is selected.
+            if (fi.files.length > 0) {
+                for (let i = 0; i <= fi.files.length - 1; i++) {
+                    console.log('aaa')
+                    const fsize = fi.files.item(i).size;
+                    const file = Math.round((fsize / 1024));
+                    // The size of the file.
+                    if (file >= 4096) {
+                        toastr.error("File quá lớn, chỉ chọn file dưới 4mb");
+                        $(fi).val('');
+                    } else {
+                        document.querySelector('.sizefile').innerHTML = file + ' KB';
+                    }
+                }
+            }
+        }
+        $(document).ready(function () {
+            var hrefurl = window.location.origin + flag;
+            console.log(window.location);
+            $('.nav li a').each(function () {
+                if (this.href == hrefurl) {
+                    $('.nav li a').each(function () {
+                        if ($(this).hasClass("active")) {
+                            $(this).removeClass("active");
+                        }
+                    });
+                    $(this).addClass('active');
+                    $(this).parent().parent().parent().children(':first-child').addClass('active');
+                    $(this).parent().parent().parent().addClass('menu-open');
+                    if (this.href == window.location.origin + "/ProjectReport/ProjectReplace_Region") {
+                        console.log("sada", $(this).parent().parent().parent().parent().parent().children(':first-child'))
+                        $(this).parent().parent().parent().parent().parent().children(':first-child').addClass('active');
+                        $(this).parent().parent().parent().parent().parent().addClass('menu-open');
+                    }
+                }
+            });
+        });
+
+
+        //change enter to tab
+        $('input').on("keypress", function (e) {
+            if ($(this).attr("name") == "topSearchString" || $(this).attr("name") == "searchStrTL") {
+                return;
+            }
+            /* ENTER PRESSED*/
+            if (e.keyCode == 13) {
+                /* FOCUS ELEMENT */
+                var inputs = $(this).parents("form").eq(0).find("input, textarea, select");
+                var idx = inputs.index(this);
+
+                if (idx == inputs.length - 1) {
+                    inputs[0].select()
+                } else {
+                    inputs[idx + 1].focus(); //  handles submit buttons
+                    inputs[idx + 1].select();
+                }
+                return false;
+            }
+        });
+
+        $(function () {
+
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+            $('.select2').select2();
+            //xác nhận kiểu datetime
+            $('.ez-date-lite').daterangepicker({
+                timePicker: false,
+                singleDatePicker: true,
+                autoclose: true,
+                locale: {
+                    format: 'DD/MM/YY'
+                }
+            });
+            $('.ez-date-full').daterangepicker({
+                timePicker: false,
+                singleDatePicker: true,
+                autoclose: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+
+            $('.ez-date-isnull-full').datepicker({
+                timePicker: false,
+                dateFormat: 'dd/mm/yy',
+                autoclose: true
+            });
+
+            $('.ez-date-isnull-lite').datepicker({
+                timePicker: false,
+                dateFormat: 'dd/mm/y',
+                autoclose: true
+            });
+
+
+            $('.datetime').daterangepicker({
+                timePicker: true,
+                singleDatePicker: true,
+                locale: {
+                    format: 'MM/DD/YYYY HH:mm'
+                },
+                minDate: new Date()
+            });
+
+            $('.timepicker').timepicker({
+                showInputs: false,
+                icons: {
+                    up: 'fas fa-plus',
+                    down: 'fas fa-minus'
+                }
+            });
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            $('.my_range').daterangepicker(
+                {
+                    ranges: {
+                        'Hôm nay': [moment(), moment()],
+                        'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        '7 ngày qua': [moment().subtract(6, 'days'), moment()],
+                        '30 ngày qua': [moment().subtract(29, 'days'), moment()],
+                        'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                        'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment(),
+                    locale: {
+                        format: 'DD/MM/YY'
+                    },
+                },
+                function (start, end) {
+                    $('#reportrange span').html(start.format('D MMMM, YYYY') + ' - ' + end.format('D MMMM, YYYY'))
+                }
+            )
+            //Date range as a button
+            $('#daterange-btn').daterangepicker(
+                {
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function (start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function (event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            });
+
+            $("input[data-bootstrap-switch]").each(function () {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            });
+
+        })
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

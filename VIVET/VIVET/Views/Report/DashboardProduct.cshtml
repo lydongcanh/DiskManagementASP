@@ -1,0 +1,16 @@
+﻿@using Ehr.ViewModels;
+@using Ehr.Common.Tools;
+@model IEnumerable<ReportNew>
+@{
+    
+    var myChart = new Chart(width: 960, height: 400, theme:Reporter.GetMyCustomTheme());
+    myChart.AddTitle("Lượng sản phẩm đã bán ra");
+
+
+    myChart.AddSeries("X", chartType: "column",
+            xValue: Model, xField: "X", 
+            yValues: Model, yFields: "Y");
+    myChart.SetXAxis("Sản phẩm");
+    myChart.SetYAxis("Số lượng");    
+    myChart.Write();
+}

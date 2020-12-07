@@ -1,0 +1,391 @@
+﻿
+@{
+    ViewBag.Title = "Danh Mục Dữ Liệu";
+}
+
+@using System.Linq
+@using Ehr.Common.Constraint
+@using Ehr.Models
+@using Ehr.Common.UI;
+@using System.ComponentModel.DataAnnotations;
+@using Ehr.Auth;
+@model IEnumerable<Ehr.Models.Product>
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.25rem + 2px);
+        padding: .75rem 1rem;
+        border: 1px solid #ced4da;
+        display: block;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-selection__arrow {
+        padding-top: 2rem;
+    }
+</style>
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Danh mục sản phẩm
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Danh mục sản phẩm</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Index", "Product", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <a href="/Product/Add" class="btn bg-success btn-sm float-left">
+                        <i class="fas fa-plus">
+                        </i>
+                        Thêm sản phẩm
+                    </a>
+                    <div class="card-tools float-right">
+                        <div class="input-group input-group-sm float-right">
+                            <div class="input-group-append" style="margin-top:5px">
+                                Kích thước trang&nbsp;&nbsp;
+                            </div>
+                            @Html.DropDownList("size", (List<SelectListItem>)ViewBag.size, new { @onchange = "this.form.submit();", @class = "form-control custom-select", @style = "border-radius:0px;width:55px;" })&nbsp;&nbsp;
+                            @Html.Hidden("page", (object)ViewBag.page)
+                            @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                            @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                            @Html.Hidden("size", (object)ViewBag.pageSize)
+                            @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm...", @style = "border-radius:0px;width:200px" })
+                            @Html.Hidden("page", (object)ViewBag.page)
+                            @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                            @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                            @Html.Hidden("size", (object)ViewBag.pageSize)
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- /.card-tools -->
+            <div class="card-body table-responsive p-0 zoom-table">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%" id="indexstt">
+                                            STT
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width: 12%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int dem = ViewBag.fromItem;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+                                        <tr>
+                                            @{
+                                                var state = i.State.GetAttribute<DisplayAttribute>().Name;
+                                                var origin = i.ProductOrigin.GetAttribute<DisplayAttribute>().Name;
+                                                var type = i.TypeOfProduct.GetAttribute<DisplayAttribute>().Name;
+                                                var bg = "";
+                                                if (i.State == State.APPROVE)
+                                                {
+                                                    bg = "bg-success";
+                                                }
+                                                else if (i.State == State.WAIT)
+                                                {
+                                                    bg = "bg-yellow";
+                                                }
+                                                else
+                                                {
+                                                    bg = "bg-red";
+                                                }
+                                            }
+                                            <td>
+                                                @dem
+                                                @{dem++;}
+                                            </td>
+                                            <td>
+                                                @i.ProductCode
+                                            </td>
+                                            <td>
+                                                @i.ProductName
+                                            </td>
+                                            <td>
+                                                @origin
+                                            </td>
+                                            <td>
+                                                @i.Company
+                                            </td>
+                                            <td>
+                                                @type
+                                            </td>
+                                            <td>
+                                                @if (i.Antimicrobials != null)
+                                                {
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <button onclick="ShowAnti(@i.Id)" class="btn btn-outline-success" type="button"><i class="fa fa-expand-arrows-alt"></i></button>
+                                                        </div>
+                                                        <select id="Se_anti" class="form-control" name="Se_anti" data-dropdown-css-class="select2-green">
+                                                            @foreach (var item in i.Antimicrobials)
+                                                            {
+                                                                <option value="@item.Id">@item.Antimi.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (i.AnimalInfors != null)
+                                                {
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <button onclick="ShowAni(@i.Id)" class="btn btn-outline-success" type="button"><i class="fa fa-expand-arrows-alt"></i></button>
+                                                        </div>
+                                                        <select id="Se_anim" class="form-control" name="Se_anim" data-dropdown-css-class="select2-green">
+                                                            @foreach (var item in i.AnimalInfors)
+                                                            {
+                                                                <option value="@item.Id">@item.Animal.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (i.OrtherABs != null)
+                                                {
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <button onclick="ShowOrth(@i.Id)" class="btn btn-outline-success" type="button"><i class="fa fa-expand-arrows-alt"></i></button>
+                                                        </div>
+                                                        <select id="Se_orth" class="form-control" name="Se_orth" data-dropdown-css-class="select2-green">
+                                                            @foreach (var item in i.OrtherABs)
+                                                            {
+                                                                <option value="@item.Id">@item.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @bg">@state</span>
+                                            </td>
+
+                                            <td class="project-actions text-right">
+                                                <a href="@Url.Action("Detail", new { id = i.Id })" class="btn btn-or-cus btn-sm">
+                                                    <i class="fas fas fa-folder"></i>
+                                                    <span>Xem</span>
+                                                </a>
+                                                <a href="@Url.Action("Update", new { id = i.Id })" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-pencil-alt">
+                                                    </i><span>Sửa</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @Html.Raw(ViewBag.paging)
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+</div>
+<div id="AddAnti" class="modal-div">
+    <div class="card" style="position:relative">
+        <div class="card-header">
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" id="btnshowantimi" data-target="#AddAnti">Thêm kháng sinh</button>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" id="closeanti"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0" style="max-height: 250px;overflow-y: auto;">
+            <table class="table table-hover table-head-fixed">
+                <thead>
+                    <tr>
+                        <th>Tên kháng sinh</th>
+                        <th>Khối lượng</th>
+                        <th>Lượng kháng sinh tỉ lệ</th>
+                        <th>Lượng sản phẩm tương ứng</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="body-antimi"></tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+</div>
+<div id="AddOrther" class="modal-div">
+    <div class="card">
+        <div class="card-header">
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" id="btnshoworther" data-target="#AddOrther">Thêm thành phần khác</button>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0"style="max-height: 250px;overflow-y: auto;">
+            <table class="table table-hover table-head-fixed">
+                <thead>
+                    <tr>
+                        <th>Tên thành phần</th>
+                        <th>Khối lượng</th>
+                        <th>Lượng thành phần tỉ lệ</th>
+                        <th>Lượng sản phẩm tương ứng</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="body-orther"></tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+</div>
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src="~/Content/img/loader.gif" />
+</div>
+<script src="~/Scripts/product/product.js"></script>
+
+@Scripts.Render("~/Content/admin-lte/plugins/datatables/jquery.dataTables.min.js")
+@Scripts.Render("~/Content/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js")
+@Styles.Render("~/Content/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css")
+@{
+    var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
+}
+<script>
+    var flag = "/Product/Index"
+</script>
+<script>
+    $(document).ajaxStart(function () {
+        $("#ezloader").css("display", "block");
+    });
+
+    $(document).ajaxComplete(function () {
+        $("#ezloader").css("display", "none");
+    });
+</script>
+<script>
+    $("#AddAnti").draggable();
+    $("#AddAnti").resizable();
+    $("#AddOrther").draggable();
+    $("#AddOrther").resizable();
+    function ShowAnti(id) {
+        var treePanel = $('#AddAnti');
+        var ctl = $('#indexstt');
+        var pos = ctl.offset();
+        treePanel.fadeOut();
+        treePanel.css('top', pos.top - 10);
+        treePanel.css('left', pos.left - 70);
+        treePanel.fadeIn();
+        $.ajax({
+            type: "GET",
+            data: {
+                "Id": id
+            },
+            dataType: "json",
+            url: "/Product/GetAntimiByProductId",
+            success: function (Data) {
+                console.log(Data);
+                for (var i = 0; i < Data.length; i++) {
+                        var animinfo = Data[i];
+                        var antimi = new Antimi(animinfo.AntimiId, animinfo.AntimiName);
+                        var newanticrobial = new AntimicroBial(animinfo.Id, antimi, animinfo.Strength, animinfo.Units, animinfo.PerAmountOfAnti, animinfo.UnitsOfPerAmountAnti, animinfo.PerAmountOfProduct, animinfo.UnitsOfPerAmountProduct, animinfo.Note);
+                        var html = GetHtmlAntimi(newanticrobial);
+                        $('#body-antimi').append(html);
+                }
+            },
+        });
+    }
+
+    function ShowOrth(id) {
+        var treePanel = $('#AddOrther');
+        var ctl = $('#indexstt');
+        var pos = ctl.offset();
+        treePanel.fadeOut();
+        treePanel.css('top', pos.top - 10);
+        treePanel.css('left', pos.left - 70);
+        treePanel.fadeIn();
+        $.ajax({
+            type: "GET",
+            data: {
+                "Id": id
+            },
+            dataType: "json",
+            url: "/Product/GetOrtherABByProductId",
+            success: function (Data) {
+                console.log(Data);
+                for (var i = 0; i < Data.length; i++) {
+                    var animinfo = Data[i];
+                    var newortherab = new OrtherAB(animinfo.Id, animinfo.Name, animinfo.Strength, animinfo.Units, animinfo.PerAmountOfAnti, animinfo.UnitsOfPerAmountAnti, animinfo.PerAmountOfProduct, animinfo.UnitsOfPerAmountProduct, animinfo.Note);
+                    var html = GetHtmlOrther(newortherab);
+                    $('#body-antimi').append(html);
+                }
+            },
+        });
+    }
+
+    function ShowAni(id) {
+        var treePanel = $('#AddOrther');
+        var ctl = $('#indexstt');
+        var pos = ctl.offset();
+        treePanel.fadeOut();
+        treePanel.css('top', pos.top - 10);
+        treePanel.css('left', pos.left - 70);
+        treePanel.fadeIn();
+        //$.ajax({
+        //    type: "GET",
+        //    data: {
+        //        "Id": id
+        //    },
+        //    dataType: "json",
+        //    url: "/Product/GetOrtherABByProductId",
+        //    success: function (Data) {
+        //        console.log(Data);
+        //        //if (item.success) {
+        //        //    for (var i = 0; i < item.Antimis.length; i++) {
+        //        //        var animinfo = item.Antimis[i];
+        //        //        var newanticrobial = newAntimicroBial(animinfo.Id, animinfo.animinfo.Antimi, animinfo.Strength, animinfo.Units, animinfo.PerAmountOfAnti, animinfo.UnitsOfPerAmountAnti, animinfo.PerAmountOfProduct, animinfo.UnitsOfPerAmountProduct, animinfo.Note);
+        //        //        var html = GetHtmlAntimi(newanticrobial);
+        //        //        $('#body-antimi').append(html);
+        //        //    }
+        //        //} else {
+        //        //    toastr.warning(item.message);
+        //        //}
+        //    },
+        //});
+    }
+    
+    $('#closeanti').click(function (e) {
+        $('#AddAnti').fadeOut();
+    });
+</script>

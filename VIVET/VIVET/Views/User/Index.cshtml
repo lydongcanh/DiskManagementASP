@@ -1,0 +1,389 @@
+﻿@{
+    /**/
+
+    /**/
+
+    ViewBag.Title = "Danh Sách Người Dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<User>
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.Common.Constraint;
+@using Ehr.Bussiness;
+
+@{
+    EhrDbContext db = new EhrDbContext();
+}
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.25rem + 2px);
+        padding: .75rem 1rem;
+        border: 1px solid #ced4da;
+        display: block;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-selection__arrow {
+        padding-top: 2rem;
+    }
+</style>
+<div class="modal fade" id="AddUser" role="dialog" aria-labelledby="AddUser" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <b> Thêm người dùng</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (@Html.BeginForm("User_Add", "User", FormMethod.Post, new { @role = "form", @enctype = "multipart/form-data" }))
+            {
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label>Tên đăng nhập</label>
+                            <input name="UserName" value="" class="form-control" placeholder="Tên đăng nhập" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Giới tính</label>
+                            <div class="form-group">
+                                <div class="form-group clearfix">
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" id="Gender1" value="Nam" name="Gender">
+                                        <label for="Gender1">Nam</label>
+                                    </div>&nbsp;&nbsp;&nbsp;
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" id="Gender2" value="Nữ" name="Gender">
+                                        <label for="Gender2">Nữ</label>
+                                    </div>&nbsp;&nbsp;&nbsp;
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" id="Gender3" value="Khác" name="Gender">
+                                        <label for="Gender3">Khác</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input name="PhoneNumber" value="" class="form-control" placeholder="Số Điện Thoại" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Hình ảnh</label>
+                            <input type="file" name="imageFile" class="form-control p-1 file" onchange="Filevalidation()" />
+                            <p class="sizefile"></p>
+                        </div>
+                        <div class="form-group">
+                            <label>Thuộc cục Thú y?</label>
+                            <div class="float-right">
+                                <input class="float-right" id="IsCentral" name="IsCentral" value="true" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Chi cục Thú y</label>
+                            <select id="Province" class="form-control select2" name="Province" data-dropdown-css-class="select2-green">
+                                <option value="1"> An Giang</option>
+                                <option value="2"> Bà Rịa - Vũng Tàu</option>
+                                <option value="3"> Bắc Giang</option>
+                                <option value="4"> Bắc Kạn</option>
+                                <option value="5"> Bạc Liêu</option>
+                                <option value="6"> Bắc Ninh</option>
+                                <option value="7"> Bến Tre</option>
+                                <option value="8"> Bình Định</option>
+                                <option value="9"> Bình Dương</option>
+                                <option value="10"> Bình Phước</option>
+                                <option value="11"> Bình Thuận</option>
+                                <option value="12"> Cà Mau</option>
+                                <option value="13"> Cần Thơ</option>
+                                <option value="14"> Cao Bằng</option>
+                                <option value="15"> Đà Nẵng</option>
+                                <option value="16"> Đắk Lắk</option>
+                                <option value="17"> Đắk Nông</option>
+                                <option value="18"> Điện Biên</option>
+                                <option value="19"> Đồng Nai</option>
+                                <option value="20"> Đồng Tháp</option>
+                                <option value="21"> Gia Lai</option>
+                                <option value="22"> Hà Giang</option>
+                                <option value="23"> Hà Nam</option>
+                                <option value="24"> Hà Nội</option>
+                                <option value="25"> Hà Tĩnh</option>
+                                <option value="26"> Hải Dương</option>
+                                <option value="27"> Hải Phòng</option>
+                                <option value="28"> Hậu Giang</option>
+                                <option value="29"> Hồ Chí Minh</option>
+                                <option value="30"> Hoà Bình</option>
+                                <option value="31"> Hưng Yên</option>
+                                <option value="32"> Khánh Hòa</option>
+                                <option value="33"> Kiên Giang</option>
+                                <option value="34"> Kon Tum</option>
+                                <option value="35"> Lai Châu</option>
+                                <option value="36"> Lâm Đồng</option>
+                                <option value="37"> Lạng Sơn</option>
+                                <option value="38"> Lào Cai</option>
+                                <option value="39"> Long An</option>
+                                <option value="40"> Nam Định</option>
+                                <option value="41"> Nghệ An</option>
+                                <option value="42"> Ninh Bình</option>
+                                <option value="43"> Ninh Thuận</option>
+                                <option value="44"> Phú Thọ</option>
+                                <option value="45"> Phú Yên</option>
+                                <option value="46"> Quảng Bình</option>
+                                <option value="47"> Quảng Nam</option>
+                                <option value="48"> Quảng Ngãi</option>
+                                <option value="49"> Quảng Ninh</option>
+                                <option value="50"> Quảng Trị</option>
+                                <option value="51"> Sóc Trăng</option>
+                                <option value="52"> Sơn La</option>
+                                <option value="53"> Tây Ninh</option>
+                                <option value="54"> Thái Bình</option>
+                                <option value="55"> Thái Nguyên</option>
+                                <option value="56"> Thanh Hóa</option>
+                                <option value="57"> Thừa Thiên Huế</option>
+                                <option value="58"> Tiền Giang</option>
+                                <option value="59"> Trà Vinh</option>
+                                <option value="60"> Tuyên Quang</option>
+                                <option value="61"> Vĩnh Long</option>
+                                <option value="62"> Vĩnh Phúc</option>
+                                <option value="63"> Yên Bái</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label>Họ tên</label>
+                            <input name="FullName" value="" class="form-control" placeholder="Họ Tên" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Vai trò</label>
+                            <div class="form-group">
+                                <div class="form-group clearfix">
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" id="UserType1" value="@UserType.LEAD" name="UserType">
+                                        <label for="UserType1">Người quản lý</label>
+                                    </div>&nbsp;&nbsp;&nbsp;
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" id="UserType2" value="@UserType.STORE" name="UserType">
+                                        <label for="UserType2">Người bán hàng</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input name="Email" value="" class="form-control" placeholder="Email" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <input name="Address" value="" class="form-control" placeholder="Địa Chỉ" required />
+                        </div>
+                        <div class="">
+                            @{
+                                var listRole = db.Roles.ToList();
+                            }
+                        </div>
+                        @*<div class="col-lg-12">
+            <label>AcTive</label>
+            <div class="float-right">
+                <input class="float-right" id="isActive" name="IsActive" value="true" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" />
+            </div>
+        </div>*@
+                        <div class="form-group">
+                            <label>Kích hoạt</label>
+                            <div class="float-right">
+                                <input class="float-right" id="isActive" name="IsActive" value="true" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kinh nghiệm làm việc</label>
+                            <textarea class="form-control" rows="3" name="Experience" id="Experience" placeholder="Nhập kinh nghiệm làm việc"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class=" ">Thuộc nhóm quyền </label>
+                    @{
+                        int tempCount = 0; //biến đếm để chia table ra là 2 cột
+                        string html = "";// xuất giao diện table
+                        string name = " name='Role"; // name của permission cần lấy
+                    }
+                    @foreach (var item in listRole)
+                    {
+                        if (tempCount % 2 == 0)
+                        {
+                            html += "<tr>";
+                        }
+                        html += "<td><input type='checkbox'" + name + item.Id + "'" + "value=" + "'" + item.Id + "'" + "/> " + item.RoleName + "</td>";
+                        if (tempCount % 2 > 0)
+                        {
+                            html += "</tr>";
+                        }
+                        tempCount++;
+                    }
+                    @{
+                        if (tempCount % 2 > 0)
+                        {
+                            html += "<td>&nbsp;</td></tr>";
+                        }
+                    }
+                    @{html = "<table class='table table-bordered'>" + html + "</table>";}
+                    @Html.Raw(html)
+                </div>
+            </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
+                    <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Người dùng hệ thống
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Người dùng hệ thống</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Index", "User", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <button type="button" class="btn bg-success btn-sm" data-toggle="modal" data-target="#AddUser">
+                        <i class="fas fa-plus">
+                        </i>
+                        Thêm người dùng mới
+                    </button>
+                    <span class="text-danger">@ViewBag.Message</span>
+                    <div class="card-tools">
+                        <div class="row">
+                            <div class="input-group input-group-sm col-lg-12">
+                                @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm người dùng", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @*@Html.Hidden("size", (object)ViewBag.pageSize)*@
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- /.card-tools -->
+            <div class="card-body p-0 ">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            #
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width:15%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+
+                                        int dem = 1;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem
+                                            </td>
+                                            @{dem++;}
+                                            <td>
+                                                <a>
+                                                    @i.Username
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.FullName
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.Address
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @{
+                                                        var rStatus = "Chưa kích hoạt";
+                                                        if (i.IsActive)
+                                                        {
+                                                            rStatus = "Đang kích hoạt";
+                                                        }
+                                                        @rStatus;
+                                                    }
+                                                </a>
+                                            </td>
+
+                                            <td class="project-actions text-right">
+                                                <a class="btn btn-or-cus btn-sm" href="../User/User_Detail?id=@i.Id">
+                                                    <i class="fas fa-folder">
+                                                    </i>
+                                                    Xem
+                                                </a>
+                                                <a class="btn btn-success btn-sm" href="../User/User_Update?id=@i.Id">
+                                                    <i class="fas fa-pencil-alt">
+                                                    </i>
+                                                    Sửa
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @*@Html.Raw(ViewBag.paging)*@
+                </div>
+            </div>
+            <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+    </section>
+</div>
+
+<!-- /.content -->
+<script>
+    var flag = "/User/Index";
+</script>

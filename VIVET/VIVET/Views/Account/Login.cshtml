@@ -1,0 +1,51 @@
+﻿@model Ehr.Models.LoginViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    ViewBag.Title = "Login";
+}
+
+<div class="card">
+
+    <div class="card-body login-card-body">
+        <div class="login-logo">
+            <a href="#"><img src="~/Content/img/VACBanner.png" style="width:320px" /></a>
+        </div>
+        <p class="login-box-msg">Hãy đăng nhập để bắt đầu làm việc!</p>
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "Tên đăng nhập hoặc email" })
+                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Mật khẩu", @autocomplete = "off" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <div class="icheck-success">
+                    @Html.CheckBoxFor(m => m.IsRemember)
+                    <label for="IsRemember" class="mb-1">
+                        Nhớ phiên đăng nhập này cho lần sau.
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Đăng nhập" class="btn btn-success btn-block" style="width:100%" />
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="/User/Register" style="color:#158052"> Đăng ký tài khoản </a>
+                </div>
+                <div class="col-md-6">
+                    @Html.ActionLink("Tôi đã quên mật khẩu?", "ForgotPassword")
+                </div>
+            </div>
+        }
+    </div>
+    <!-- /.login-card-body -->
+    <div class="card-footer">
+        <strong>&copy; 2020.</strong>  <a href="https://eznet.com.vn"> EZ NET Technology Company.</a>
+    </div>
+</div>

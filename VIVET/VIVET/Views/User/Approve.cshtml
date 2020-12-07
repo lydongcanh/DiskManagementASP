@@ -1,0 +1,225 @@
+﻿@{
+    /**/
+
+    /**/
+
+    ViewBag.Title = "Duyệt Người Dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<User>
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.Common.Constraint;
+@using Ehr.Bussiness;
+
+@{
+    EhrDbContext db = new EhrDbContext();
+}
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.25rem + 2px);
+        padding: .75rem 1rem;
+        border: 1px solid #ced4da;
+        display: block;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-selection__arrow {
+        padding-top: 2rem;
+    }
+    #approvePanel, #rejectPanel {
+        margin-top: 10%;
+        transform: scale(0.9)
+    }
+    .bg-teal{
+        background-color:#00ff90;
+    }
+</style>
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Người dùng chờ duyệt
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Người dùng chờ duyệt</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            @using (Html.BeginForm("Approve", "User", FormMethod.Get))
+            {
+                <div class="card-header">
+                    <span class="text-danger">@ViewBag.Message</span>
+                    <div class="card-tools">
+                        <div class="row">
+                            <div class="input-group input-group-sm col-lg-12">
+                                @Html.TextBox("SearchString", (string)ViewBag.searchValue, new { @class = "form-control", @type = "text", @placeholder = "Tìm người dùng", @style = "border-radius:0px" })
+                                @Html.Hidden("page", (object)ViewBag.page)
+                                @Html.Hidden("sortProperty", (object)ViewBag.sortProperty)
+                                @Html.Hidden("sortOrder", (object)ViewBag.sortOrder)
+                                @*@Html.Hidden("size", (object)ViewBag.pageSize)*@
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- /.card-tools -->
+            <div class="card-body p-0 ">
+                <div class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            #
+                                        </th>
+                                        @Html.Raw(ViewBag.GridHeader)
+                                        <th style="width:15%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+
+                                        int dem = 1;
+                                    }
+                                    @foreach (var i in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem
+                                            </td>
+                                            @{dem++;}
+                                            <td>
+                                                <a>
+                                                    @i.Username
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.FullName
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @i.Address
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a>
+                                                    @{
+                                                        var rStatus = "Chưa kích hoạt";
+                                                        if (i.IsActive)
+                                                        {
+                                                            rStatus = "Đang kích hoạt";
+                                                        }
+                                                        @rStatus;
+                                                    }
+                                                </a>
+                                            </td>
+
+                                            <td class="project-actions text-right">
+                                                <a class="btn btn-or-cus btn-sm" href="../User/User_Detail?id=@i.Id">
+                                                    <i class="fas fa-folder">
+                                                    </i>
+                                                    Xem
+                                                </a>
+                                                <a class="btn bg-teal btn-sm" onclick="approveUser(@i.Id)">
+                                                    <i class="fas fa-check-circle">
+                                                    </i>
+                                                    Duyệt
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @*@Html.Raw(ViewBag.paging)*@
+                </div>
+            </div>
+            <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+    </section>
+</div>
+<div class="modal fade" id="approvePanel" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- card body-->
+            <div class="card-body">
+                <input type="hidden" id="idapprove" name="idapprove" />
+                <br />
+                <h2>Bạn đồng ý duyệt người dùng ?</h2>
+                <br />
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer" style="background-color:white">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn bg-teal float-right" id="submitApprove">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.content -->
+<script>
+    var flag = "/User/Approve";
+
+
+
+    function approveUser(id) {
+        if (id) {
+            $("#idapprove").val(id);
+            $("#approvePanel").modal("show");
+        }
+    }
+
+    $("#submitApprove").click(function (){
+        var id = $("#idapprove").val();
+        if (id) {
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({
+                    userid: id
+                }),
+                url: "@Url.Action("ApproveUser", "User")",
+                success: function (item) {
+                    if (item.success) {
+                        toastr.success(item.message);
+                        setTimeout(function () { location.reload(); }, 800);
+                    } else {
+                        toastr.error(item.message);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    });
+</script>

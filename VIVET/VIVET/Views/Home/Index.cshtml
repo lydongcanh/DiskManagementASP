@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Trang chủ";
+}
+@using Ehr.Data;
+@using Ehr.Models;
+@using Ehr.Common.UI;
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Trang chủ
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">Thống kê</h3>
+                </div>
+                <div class="card-body">
+                    <h4>1. Báo cáo sản phẩm đã bán theo tháng</h4>
+                    <div class="chart">
+                        <img src="../../Report/Dashboard" />
+                    </div>
+                    <h4>2. Báo cáo lượng kháng sinh bán ra</h4>
+                    <div class="chart">
+                        <img src="../../Report/DashboardAntibiotics" />
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<!-- jQuery -->
+<script>
+    var flag = "/";
+</script>
+
+<!-- fullCalendar -->

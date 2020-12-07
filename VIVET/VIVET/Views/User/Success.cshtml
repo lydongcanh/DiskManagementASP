@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Success";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+<div class="card">
+    <div class="card-body">
+        @{
+            var style = "";
+            var msg = "";
+            if (ViewBag.Message == "0")
+            {
+                style = "alert-success";
+                msg = " Thành công ! Bạn vui lòng chờ Email, hệ thống sẽ xét duyệt và sẽ gửi mật khẩu qua Email của bạn.";
+            }
+            else if (ViewBag.Message == "-1")
+            {
+                style = "alert-danger";
+                msg = "Đã có lỗi xảy ra !";
+            }
+            else
+            {
+                style = "alert-warning";
+                if (ViewBag.Message == "1")
+                {
+                    msg = "Tên đăng nhập đã tồn tại !";
+                }
+                else if (ViewBag.Message == "2")
+                {
+                    msg = "Kích thước file quá lớn !";
+                }
+                else
+                {
+                    msg = "Không phả file hình !";
+                }
+            }
+        }
+        <div class="alert @style alert-dismissible">
+            @msg
+        </div>
+    </div>
+    <div class="card-footer">
+        <a class="btn bg-gradient-navy float-right" href="/Account/Login">Thoát</a>
+        <button type="button" class="btn  btn-warning  " onclick="window.history.back();">Quay lại</button>
+    </div>
+</div>

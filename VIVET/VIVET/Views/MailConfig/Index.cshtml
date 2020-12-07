@@ -1,0 +1,194 @@
+﻿@using Ehr.Models
+@{
+    ViewBag.Title = "Cấu Hình Mail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Ehr.Models
+@model Ehr.Models.MailConfig
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Cấu hình máy chủ mail
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active"> Cấu hình máy chủ mail</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <b>Thông tin cấu hình</b>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form id="form-update-mailconfig">
+                <div class="card-body">
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>Địa chỉ server gởi mail (SMTP):</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                                <input type="text" name="txtServerAddress" value="@Html.DisplayFor(m => m.ServerAddress)" class="form-control" id="serverAddress" placeholder="Địa chỉ server gởi mail (SMTP)">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>Cổng (Port):</label>
+                            </div>
+                            <div class="col-sm-8">
+
+                                <input type="text" name="txtPort" value="@Html.DisplayFor(m => m.Port)" class="form-control" id="port">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="chkSSL">  Sử dụng SSL?</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="icheck-primary d-inline">
+
+                                    @{
+                                        string chk = "";
+                                        if (Model.UseSSL == true)
+                                        {
+                                            chk = "checked";
+                                        }
+
+                                        else if (Model.UseSSL == false)
+
+                                        {
+                                            chk = "";
+                                        }
+
+                                    }
+
+                                    <input id="ssl" name="UseSSL" type="checkbox" @chk data-bootstrap-switch data-off-color="danger" data-on-color="success" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtEmail">Email gởi đi</label>
+                        <input type="email" name="txtEmailSend" value="@Html.DisplayFor(m => m.EmailSend)" class="form-control" id="txtEmail" placeholder="Nhập email">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtEmailCC">Email CC</label>
+                        <input type="email" name="EmailCC" value="@Html.DisplayFor(m => m.EmailCC)" class="form-control" id="txtEmailCC" placeholder="Email CC">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtUsername">Tên đăng nhập</label>
+                        <input type="email" name="txtUsername" value="@Html.DisplayFor(m => m.Username)" class="form-control" id="txtUsername" placeholder="Tên đăng nhập">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtPassword">Mật khẩu</label>
+                        <input type="password" name="txtPassword" value="@Html.DisplayFor(m => m.Password)" class="form-control" id="txtPassword" placeholder="Mật khẩu">
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <div class="card-footer" style="background-color:white">
+                    <button type="submit" class="btn bg-success float-right">Lưu cấu hình</button><a href="#" onclick="window.history.back();" class="btn btn-warning float-left">Hủy thao tác</a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+@Scripts.Render("~/Content/admin-lte/plugins/datatables/jquery.dataTables.min.js")
+@Scripts.Render("~/Content/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js")
+@Styles.Render("~/Content/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css")
+@{
+    var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);// Server.ur ( "~/Content/img/loader.gif" );
+}
+@Scripts.Render("~/Scripts/ez_mail.js")
+
+<script>
+    $(document).ajaxStart(function () {
+        $.LoadingOverlay("show");
+    }).ajaxStop(function () {
+        $.LoadingOverlay("hide");
+    });
+</script>
+<script>
+    var flag = "/MailConfig/Index";
+</script>
+<script>
+    $(function () {
+        $("#form-update-mailconfig").submit(function (e) {
+            e.preventDefault();
+            var serializedForm = $(this).serializeArray();
+            var _serveraddress = serializedForm.some(val => val.name == "txtServerAddress" && val.value.trim() !== "");
+            var _port = serializedForm.some(val => val.name == "txtPort" && val.value.trim() !== "");
+            var _username = serializedForm.some(val => val.name == "txtUsername" && val.value.trim() !== "");
+            var _password = serializedForm.some(val => val.name == "txtPassword" && val.value.trim() !== "");
+            var _emailsend = serializedForm.some(val => val.name == "txtEmailSend" && val.value.trim() !== "");
+            var _emailcc = serializedForm.some(val => val.name == "EmailCC" && val.value.trim() !== "");
+
+            if (_serveraddress && _port && _username && _password && _emailsend && _emailcc !== "") {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    data: serializedForm,
+                    url: "/MailConfig/Update",
+                    success: function (item) {
+                        $.LoadingOverlay("hide");
+                        setTimeout(function () {
+                            if (item.success) {
+                                toastr.success(item.message);
+                                window.location.href = window.location.origin + "/MailConfig/Index";
+                            } else {
+                                toastr.error(item.message);
+                            }
+                        }, 500);
+
+                    },
+                    error: function (err) {
+                        $.LoadingOverlay("hide");
+                        setTimeout(function () {
+                            toastr.error("Cập nhật cấu hình mail không thành công", "Failed");
+                        }, 500);
+                        console.log(err);
+                    }
+                });
+            } else {
+                if (!_serveraddress)
+                    toastr.warning("Bạn chưa nhập địa chỉ server");
+                else if (!_port)
+                    toastr.warning("Bạn chưa nhập cổng port");
+                else if (!_username)
+                    toastr.warning("Bạn chưa nhập tên tài khoản");
+                else if (!_password)
+                    toastr.warning("Bạn chưa nhập mật khẩu");
+                else if (!_emailsend)
+                    toastr.warning("Bạn chưa nhập email gửi");
+                else if (!_emailcc)
+                    toastr.warning("Bạn chưa nhập email cc");
+
+            }
+        });
+
+    });
+
+</script>

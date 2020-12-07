@@ -1,0 +1,128 @@
+﻿@model Ehr.Models.User
+@{
+    ViewBag.Title = "Cập Nhật Thông Tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Cập nhật thông tin
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active"> Cập nhật thông tin</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+
+            <!-- general form elements -->
+            <div class="card card-success">
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm("UpdateProfile", "User", FormMethod.Post, new { @role = "form", @enctype = "multipart/form-data" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="card-body">
+                                    <input name="id" value="@Model.Id" hidden />
+                                    <span class="text-success">@ViewBag.Message</span>
+                                    <div class="form-group">
+                                        <div class="img-thumbnail text-center w-25 h-25">
+                                            <img src="../../Resource/EZIMG?appx=@Model.Image" class="w-100 h-100" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Upload hình ảnh mới</label>
+                                        <input name="ImageUpdate" type="file" class="form-control p-1 file" onchange="Filevalidation()" />
+                                        <p class="sizefile"></p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tên đăng nhập</label>
+                                        <input name="UserName" value="@Model.Username" class="form-control" readonly placeholder="Tên đăng nhập" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Họ và tên</label>
+                                        <input name="FullName" value="@Model.FullName" class="form-control" placeholder="Họ và tên" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Giới tính</label>
+                                        <div class="form-group">
+                                            @{
+                                                var ck1 = "";
+                                                var ck2 = "";
+                                                var ck3 = "";
+                                                if (Model.Gender == "Nam")
+                                                {
+                                                    ck1 = "checked";
+                                                }
+                                                else if (Model.Gender == "Nữ")
+                                                {
+                                                    ck2 = "checked";
+                                                }
+                                                else if (Model.Gender == "Khác")
+                                                {
+                                                    ck3 = "checked";
+                                                }
+                                            }
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-success d-inline">
+                                                    <input type="radio" id="Gender1" value="Nam" name="Gender" @ck1>
+                                                    <label for="Gender1">Nam</label>
+                                                </div>&nbsp;&nbsp;&nbsp;
+                                                <div class="icheck-success d-inline">
+                                                    <input type="radio" id="Gender2" value="Nữ" name="Gender" @ck2>
+                                                    <label for="Gender2">Nữ</label>
+                                                </div>&nbsp;&nbsp;&nbsp;
+                                                <div class="icheck-success d-inline">
+                                                    <input type="radio" id="Gender3" value="Khác" name="Gender" @ck3>
+                                                    <label for="Gender3">Khác</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Địa chỉ email</label>
+                                        <input name="Email" value="@Model.Email" class="form-control" placeholder="Email" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Điện thoại</label>
+                                        <input name="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Số Điện Thoại" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Địa chỉ</label>
+                                        <input name="Address" value="@Model.Address" class="form-control" placeholder="Địa Chỉ" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kinh nghiệm làm việc</label>
+                                        <textarea class="form-control" rows="4" name="Experience" id="Experience" placeholder="Nhập kinh nghiệm làm việc">@Model.Experience</textarea>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-success float-right">Lưu dữ liệu</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    var flag = "/User/Index";
+</script>

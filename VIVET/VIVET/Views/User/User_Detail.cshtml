@@ -1,0 +1,161 @@
+﻿@using Ehr.Auth;
+@using Ehr.Models;
+@using System.ComponentModel.DataAnnotations;
+@model  User
+@{
+    ViewBag.Title = "Thông tin người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Thông tin người dùng
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active"> Thông tin người dùng</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <b>Thông tin User </b>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">
+                                @if (Model.Image != null)
+                                {
+                                    <div class="img-thumbnail text-center w-25 h-25">
+                                        <img src="../../Resource/EZIMGA?appx=@Model.Image" class="w-100 h-100" />
+                                    </div>
+                                }
+                            </li>
+                            <li class="list-group-item">
+                                <b>Tên đăng nhập</b><br />
+                                <a>
+                                    @{
+                                        if (Model.Username != null)
+                                        {
+                                            @(Model.Username )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Họ và tên</b><br />
+                                <a>
+                                    @{
+                                        if (Model.FullName != null)
+                                        {
+                                            @(Model.FullName )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Giới tính</b><br />
+                                <a>
+                                    @{
+                                        if (Model.Gender != null)
+                                        {
+                                            @(Model.Gender )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Email</b> <br />
+                                <a>
+                                    @{
+                                        if (Model.Email != null)
+                                        {
+                                            @(Model.Email )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Địa chỉ</b><br />
+                                <a>
+                                    @{
+                                        if (Model.Address != null)
+                                        {
+                                            @(Model.Address )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Số điện thoại</b> <br />
+                                <a>
+                                    @{
+                                        if (Model.PhoneNumber != null)
+                                        {
+                                            @(Model.PhoneNumber )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Kinh nghiệm làm việc</b><br />
+                                <a>
+                                    @{
+                                        if (Model.Experience != null)
+                                        {
+                                            @(Model.Experience )
+                                        }
+                                    }
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Trạng thái </b>
+                                <br />
+                                <a>
+                                    @(Model.IsActive ? "Hoạt động" : "Ngưng hoạt động")
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+
+                                <b>Các quyền của người dùng</b>
+                            </li>
+                            <li class="list-group-item">
+                                @foreach (var i in Model.Roles.ToList())
+                                {
+                                    <a>- @i.RoleName</a><br />
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer" style="background-color:white">
+                    <a class="btn btn-warning" href="#" onclick="window.history.back();">Quay về</a>&nbsp;&nbsp;&nbsp;
+                    @if (User.UserId == Model.Id)
+                    {
+                        <a class="btn btn-or-cus" href="/Account/ChangePassword/@Model.Id">Đổi mật khẩu</a>
+                        <a class="btn bg-success float-right" href="/User/UpdateProfile/@Model.Id">Cập nhật thông tin</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<script>
+    var flag = "/User/Index";
+</script>

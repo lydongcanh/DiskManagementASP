@@ -1,0 +1,485 @@
+﻿@using Ehr.Common.UI;
+@using Ehr.Models;
+@using Ehr.ViewModels;
+@model List<Candidate>
+<style>
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+        color: #555;
+        cursor: default;
+        background-color: #fff;
+        border-bottom: 2px solid dodgerblue;
+    }
+
+    .nav-tabs {
+        border: none;
+    }
+
+    .select2-selection__choice {
+        background-color: green !important;
+    }
+</style>
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Kết quả tìm kiếm</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Trang chủ</a>
+                        </li>
+                        <li class="breadcrumb-item active">Danh sách ứng viên tìm được</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+
+
+        <!-- Default box -->
+        <div class="card card-solid">
+            <div class="card-header text-sm">
+                <div class="card-title" style="font-size:12pt !important;">
+                    <div class="input-group input-group-sm">
+
+                    </div>
+                </div>
+                <div class="card-tools">
+                    <div class="input-group input-group-sm">
+                        Số hồ sơ hiển thị &nbsp;
+                        <select id="numItems" name="numItems" onchange="updateSize();">
+                            <option value="12">12</option>
+                            <option value="24">24</option>
+                            <option value="36">36</option>
+                            <option value="60">60</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- /.card-tools -->
+            </div>
+            <div id="allContent">
+
+                <div class="card">
+                    <div class="card-header">
+                        <nav aria-label="Page">
+                            <ul class="pagination justify-content-end text-sm m-0">
+                                @{
+                                    if (Model.Count > 0)
+                                    {
+                                        <li class='page-item'><a class='page-link'>@ViewBag.Label Trang </a></li>
+                                        @Html.Raw(ViewBag.Paging)
+                                    }
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div class="row d-flex align-items-stretch">
+                            @{
+
+                                if (Model.Count == 0)
+                                {
+                                    @Html.Raw("Không tìm thấy ứng viên nào.");
+                                }
+                                else
+                                {
+                                    foreach (Candidate cand in Model)
+                                    {
+                                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch" id="@cand.Id">
+                                            <div class="card bg-light">
+                                                <div class="card-header text-muted border-bottom-0">
+                                                    @cand.Position.Name
+                                                </div>
+                                                <div class="card-body pt-0">
+                                                    <div class="row">
+                                                        <div class="col-7">
+                                                            <h2 class="lead">
+                                                                <b>@cand.FullName</b>
+                                                            </h2>
+                                                            <p class="text-muted text-sm">
+                                                                Ngày sinh: <b>@DataConverter.DateTime2UI_Full((cand.DOB ?? DateTime.MaxValue))</b>. Cao : <b>
+                                                                    @cand.Height cm
+                                                                </b>. Nặng: <b>@cand.Weight kg</b>
+                                                            </p>
+                                                            <ul class="ml-4 mb-0 fa-ul text-muted">
+                                                                <li class="small">
+                                                                    <span class="fa-li"><i class="fas fa-lg fa-building"></i></span> @cand.Address
+                                                                </li>
+                                                                <li class="small">
+                                                                    <span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Điện thoại #: @cand.PhoneNumber
+                                                                </li>
+                                                                <li class="small">
+                                                                    <span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: @cand.Email
+                                                                </li>
+                                                                <li class="small">
+                                                                    <span class="fa-li"><i class="fas fa-lg fa-facebook"></i></span> Facebook #: @cand.Facebook
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-5 text-center">
+                                                            @{
+                                                                string imgURL = "";
+                                                                if (cand.Photos != null)
+                                                                {
+                                                                    string[] p = cand.Photos.Split(',');
+                                                                    imgURL = "../Resource/EZIMGA?appx=" + p.FirstOrDefault();
+                                                                }
+                                                            }
+                                                            <img src="@imgURL" alt="" class="img-circle img-fluid">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="input-group pull-right">
+                                                        @using (Ajax.BeginForm("TimeLine", "Home", null, new AjaxOptions { UpdateTargetId = "page-content", InsertionMode = InsertionMode.Replace, LoadingElementId = "navbar-search", HttpMethod = "POST" }, new { @class= "pull-right" }))
+                                                        {
+                                                            <input type="hidden" value="@cand.Id" name="id" />
+                                                            <button class="btn btn-sm bg-teal" type="submit">
+                                                                <i class="fas fa-eye"></i> Dòng thời gian
+                                                            </button>
+                                                        }
+                                                        <a href="#" class="btn btn-sm btn-primary pull-right ml-1" onclick="showDetail(@cand.Id);">
+                                                            <i class="fas fa-user"></i> Xem hồ sơ
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <nav aria-label="Page">
+                            <ul class="pagination justify-content-center m-0">
+                                @{
+                                    if (Model.Count > 0)
+                                    {
+                                        <li class='page-item'><a class='page-link'>Trang </a></li>
+                                        @Html.Raw(ViewBag.Paging)
+                                    }
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+
+<!--Modal detail-->
+@Scripts.Render("~/Scripts/interview/interview.js")
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModal" aria-hidden="true">
+    <div class="modal-dialog w-100 modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <div class="row w-100">
+                    <div class="col-12">
+                        <h4 class="modal-title w-100 font-weight-bold">Ứng viên</h4>
+                    </div>
+                    <div class="col-12">
+                        <h3 class="modal-title w-100 font-weight-bold"><b id="CandidateName" class="text-info"></b></h3>
+                    </div>
+                    <div class="col-12">
+                        <ul class="nav nav-tabs">
+                            <li class="active nav-tab mr-4"><a data-toggle="tab" href="#home">Thông tin từ mẫu form</a></li>
+                            <li class="nav-tab mr-4"><a data-toggle="tab" href="#menu1">Hình ảnh</a></li>
+                            <li class="mr-4"><a href="#" id="CV" class="text-success">Download CV</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <div class="tab-content">
+                    <div id="home" class="tab-pane fade in active show">
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="md-form mb-2">
+                                    <label>Họ tên</label>
+                                    <input type="text" id="FullName" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Giới tính</label>
+                                    <input type="text" id="Sex" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Email</label>
+                                    <input type="text" id="Email" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Số điện thoại</label>
+                                    <input type="text" id="Phone" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Tuổi</label>
+                                    <input type="text" id="Age" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Địa chỉ</label>
+                                    <input type="text" id="Address" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Facebook</label>
+                                    <input type="text" id="Facebook" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Zalo</label>
+                                    <input type="text" id="Zalo" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Vị trí ứng tuyển</label>
+                                    <input type="text" id="Position" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Vòng đã phỏng vấn</label>
+                                    <input type="text" id="RoundPassed" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Nhận xét</label>
+                                    <textarea id="Comment" readonly class="form-control" cols="20" rows="5">
+                                 </textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xs-12">
+                                <div class="md-form mb-2">
+                                    <label>Chiều cao</label>
+                                    <input type="text" id="Height" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Cân nặng</label>
+                                    <input type="text" id="Weight" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Học vấn</label>
+                                    <input type="text" id="EducationLevel" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Ngày nộp hồ sơ</label>
+                                    <input type="text" id="SubmissionDate" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Ngày có thể nhận việc</label>
+                                    <input type="text" id="StartedDate" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Mẫu Form</label>
+                                    <input type="text" id="Form" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Nhân viên giới thiệu</label>
+                                    <input type="text" id="InternalSourceName" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Mã nhân viên giới thiệu</label>
+                                    <input type="text" id="InternalSourceCode" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Khu vực tuyển dụng</label>
+                                    <input type="text" id="Region" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Tỉnh thành tuyển dụng</label>
+                                    <input type="text" id="Cities" value="" readonly class="form-control">
+                                </div>
+                                <div class="md-form mb-2">
+                                    <label>Kinh nghiệm</label>
+                                    <textarea id="Experiences" readonly class="form-control" cols="20" rows="5">
+                                 </textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="menu1" class="tab-pane fade">
+                        <div class="row">
+                            <div class="col-md-4 col-xs-12">
+                                <label>Ảnh 1</label>
+                                <img src="~/Images/User/user-default.jpg" id="Image1" class="img-bordered img-thumbnail w-100" />
+                            </div>
+                            <div class="col-md-4 col-xs-12">
+                                <label>Ảnh 2</label>
+                                <img src="~/Images/User/user-default.jpg" id="Image2" class="img-bordered img-thumbnail w-100" />
+                            </div>
+                            <div class="col-md-4 col-xs-12">
+                                <label>Ảnh 3</label>
+                                <img src="~/Images/User/user-default.jpg" id="Image3" class="img-bordered img-thumbnail w-100" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-outline-danger" data-dismiss="modal">Thoát</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src="~/Content/img/loader.gif" />
+</div>
+<script>
+    $(document).ajaxStart(function () {
+        $("#ezloader").css("display", "block");
+    });
+
+    $(document).ajaxComplete(function () {
+        $("#ezloader").css("display", "none");
+    });
+
+
+    $(function () {
+        fetch(window.location.origin + '/Interview/LoadProjectMoveOn')
+            .then(res => res.json())
+            .then(data => {
+                $("#Project").select2({
+                    data: data
+                });
+            });
+
+        $("#Vacancy").select2();
+
+        $("#Project").change(function () {
+            $("#Vacancy").empty();
+            fetch(window.location.origin + '/Interview/GetVacancy?idproject=' + $(this).val())
+                .then(res => res.json())
+                .then(data => {
+                    $("#Vacancy").select2({
+                        data: data
+                    });
+                });
+        });
+
+        $(".nav-tabs li.nav-tab a").click(function () {
+            $(this).parent().parent().children().removeClass('active');
+            if (!$(this).parent().hasClass("active")) {
+                $(this).parent().addClass('active');
+            }
+        });
+
+        $("input[name='Score']").change(function () {
+            var value = $(this).val();
+            if (value > 10) {
+                $(this).val(10);
+            }
+            if (value < 0) {
+                $(this).val(0);
+            }
+        });
+
+        $("input[name='RadioState']").change(function () {
+            if ($(this).val() == "MOVEON") {
+                $("#moveondiv").fadeIn();
+            }
+            else {
+                $("#moveondiv").fadeOut();
+            }
+
+            if ($(this).val() == "FAILED") {
+                $("#failed").fadeIn();
+            }
+            else {
+                $("#failed").fadeOut();
+            }
+
+            if ($(this).val() == "PASS") {
+                $("#passed").fadeIn();
+            }
+            else {
+                $("#passed").fadeOut();
+            }
+        });
+
+
+
+
+        $("#UpdateState").submit(function (e) {
+            e.preventDefault();
+            var serialize = $(this).serializeArray();
+            serialize.forEach((v, i) => {
+                if (v.name.includes("Failed")) {
+                    serialize[i].value = "true";
+                }
+            });
+
+            var idcandidate = serialize.find(s => s.name == "IdCandidate").value;
+            $.ajax({
+                data: serialize,
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("UpdateState", "Interview")',
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        $("#UpdateState")[0].reset();
+                        $("#updateState").modal("hide");
+                        var card = $("#" + idcandidate);
+                        card.animate({
+                            opacity: '0',
+                            display: 'none'
+                        }, 500, function () {
+                            card.remove();
+                        });
+                        $("#moveondiv").fadeOut();
+                        $("#failed").fadeOut();
+                         $("#passed").fadeOut();
+
+                    } else {
+                        toastr.warning(data.message);
+                    }
+                },
+                error: function (err) {
+                    toastr.error("Lỗi hệ thống");
+                }
+            })
+        });
+
+        $("#CommentInterview").submit(function (e) {
+            e.preventDefault();
+            var serialize = $(this).serializeArray();
+            console.log(serialize);
+            $.ajax({
+                data: serialize,
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("CommentInterview", "Interview")',
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        $("#CommentInterview")[0].reset();
+                        $("#commentInterview").modal("hide");
+                    } else {
+                        toastr.warning(data.message);
+                    }
+                },
+                error: function (err) {
+                    toastr.error("Lỗi hệ thống");
+                }
+            })
+        });
+    });
+</script>

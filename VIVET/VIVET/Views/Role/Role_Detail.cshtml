@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewBag.Title = "Chi Tiết Quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using Ehr.Data;
+@using Ehr.Models;
+@using Ehr.Common.Constraint;
+@model IEnumerable<Role>
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Thông tin nhóm quyền
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Thông tin nhóm quyền</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <div class="content">
+        <div class="card">
+            <div class="card-header">
+                <b>Thông tin chi tiết </b>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        @foreach (var item_rol in Model)
+                        {
+
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item">
+                                    <b>Tên nhóm quyền</b><br />
+                                    <a>@item_rol.RoleName </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Trạng thái </b><br />
+                                    <a>
+                                        @{
+                                            var rStatus = "Chưa kích hoạt";
+                                            if (item_rol.RoleStatus == RoleStatus.ACTIVATED)
+                                            {
+                                                rStatus = "Đang kích hoạt";
+                                            }
+                                            @rStatus;
+                                        }
+                                        @rStatus
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Có quyền cao nhất của hệ thống?</b><br />
+                                    <a>
+                                        @{
+                                            var rRoot = "Không";
+                                            if (item_rol.IsRoot == YesNo.YES)
+                                            {
+                                                rRoot = "Có";
+                                            }
+                                            @rRoot;
+                                        }
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+
+                                    <b>Danh sách quyền sở hữu</b>
+                                </li>
+                                <li class="list-group-item">
+                                    @foreach (var i in item_rol.Permissions.ToList())
+                                    {
+                                        <a>- @i.PermissionName</a><br />
+                                    }
+                                </li>
+
+
+                            </ul>
+
+
+                        }
+
+                    </div>
+                </div>
+                <div class="card-footer" style="background-color:white">
+                    <a class="btn btn-warning float-right" href="/Role/Index">Quay về</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var flag = "/Role/Index";
+</script>

@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "Cập Nhật Quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Ehr.Models;
+@using Ehr.Data;
+@using Ehr.Common.Constraint;
+@using Ehr.Bussiness;
+@model IEnumerable<Role>
+@{EhrDbContext db = new EhrDbContext();}
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Sửa thông tin nhóm quyền
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Sửa thông tin nhóm quyền</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Content Header (Page header) -->
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <b>Chỉnh sửa thông tin</b>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+
+
+            <div class="col-12">
+
+
+                @using (@Html.BeginForm("Role_Update", "Role", FormMethod.Post, new { @role = "form", enctype = "multipart/form-data" }))
+                {
+                    foreach (var i in Model)
+                    {
+                        <input name="id" hidden="hidden" value=@i.Id>
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label>Tên nhóm quyền</label>
+                                <input name="RoleName" value=@i.RoleName class="form-control" placeholder="Nhập Tên Role" required />
+                                @*@Html.TextBox("RoleName", i.RoleName, new { @class = "form-control", @placeholder = "Nhập Tên Role", @type = "text" })*@
+                            </div>
+                            <table>
+                                <tr>
+                                    <td style="width:250px;">
+                                        <label> Cho phép có hiệu lực</label>
+                                        @{
+                                            string isactivated = "";
+                                            string isroot = "";
+                                        }
+                                        @if (@i.RoleStatus == @RoleStatus.ACTIVATED)
+                                        {
+                                            isactivated = " checked";
+                                        }
+                                        @if (@i.IsRoot == @YesNo.YES)
+                                        {
+                                            isroot = " checked";
+                                        }
+                                    </td>
+                                    <td><input @isactivated id="RoleStatus" name="RoleStatus" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" class="float-right" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Quyền cao nhất</label> </td>
+                                    <td><input @isroot id="IsRoot" name="IsRoot" type="checkbox" data-bootstrap-switch data-off-color="danger" data-on-color="success" class="float-right" /></td>
+                                </tr>
+                            </table>
+
+                            <div class="">
+
+                                @{
+                                    var listPermession = db.Permissions.ToList();
+                                }
+                            </div>
+                            <label>Chọn quyền </label>
+                            <div class="col-12">
+                                <div>
+                                    @{
+                                        int tempCount = 0;
+                                        string html = "";
+                                        string name = " name='Permission";
+
+
+                                    }
+
+                                    @foreach (var item in listPermession)
+                                    {
+
+                                        List<Permission> perms = i.Permissions.ToList();
+                                        var lstPerms = perms.Where(p => p.Id.Equals(item.Id)).ToList();
+                                        string ischecked = (lstPerms.Count > 0) ? "checked='checked'" : "";
+                                        if (tempCount % 2 == 0)
+                                        {
+                                            html += "<tr>";
+                                        }
+                                        html += "<td><input type='checkbox'" + name + item.Id + "'" + ischecked + "value=" + "'" + item.Id + "'" + "/> &nbsp" + item.PermissionName + "</td>";
+
+                                        if (tempCount % 2 > 0)
+                                        {
+                                            html += "</tr>";
+                                        }
+                                        tempCount++;
+                                    }
+                                    @{
+                                        if (tempCount % 2 > 0)
+                                        {
+                                            html += "<td>&nbsp;</td></tr>";
+                                        }
+                                    }
+                                    @{html = "<table class='table table-bordered'>" + html + "</table>";}
+                                    @Html.Raw(html)
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        <div class="card-footer" style="background-color:white">
+
+                            <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
+                            <a class="btn btn-warning " href="/Role/Index">Quay về</a>
+
+                        </div>
+
+                    }
+
+                }
+
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+<script>
+    var flag = "/Role/Index";
+</script>
+
+
+
