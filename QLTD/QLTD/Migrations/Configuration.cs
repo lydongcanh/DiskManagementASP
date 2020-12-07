@@ -23,26 +23,18 @@
 
 			#region Permission
 			List<Permission> permissions = new List<Permission> ( );
-			permissions.Add ( new Permission ( ) { PermissionCode = "USER_MNT",PermissionName = "Quản lý nhân viên",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "SYSTEM_CFG",PermissionName = "Cấu hình hệ thống",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "DASHBOARD",PermissionName = "Xem dashboard",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "DATA_INPUT", PermissionName = "Nhập dữ liệu",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "DATA_REVIEW", PermissionName = "Xét duyệt dữ liệu",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "DATA_MNT", PermissionName = "Quản lý dữ liệu",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "CALCULATOR", PermissionName = "Tính toán lượng thuốc",PermisstionStatus = PermisstionStatus.ACTIVATED } );
-			permissions.Add ( new Permission ( ) { PermissionCode = "HISTORY",PermissionName = "Xem lịch sử",PermisstionStatus = PermisstionStatus.ACTIVATED } );
+			permissions.Add ( new Permission ( ) { PermissionCode = "CUS_MNT",PermissionName = "Quản lý khách hàng",PermisstionStatus = PermisstionStatus.ACTIVATED } );
+			permissions.Add ( new Permission ( ) { PermissionCode = "DISK_MNT",PermissionName = "Quản lý đĩa",PermisstionStatus = PermisstionStatus.ACTIVATED } );
+			permissions.Add ( new Permission ( ) { PermissionCode = "RENT_DISK",PermissionName = "Đặt/Thuê đĩa",PermisstionStatus = PermisstionStatus.ACTIVATED } );
+			permissions.Add ( new Permission ( ) { PermissionCode = "USER_MNT",PermissionName = "Quản lý hệ thống",PermisstionStatus = PermisstionStatus.ACTIVATED } );
 			context.Permissions.AddOrUpdate ( p => p.Id,permissions.ToArray ( ) );
 			#endregion
 
 			#region Role
 
 			List<Role> roles = new List<Role> ( );
-			roles.Add ( new Role ( ) { IsRoot = YesNo.YES,RoleName = "Quản trị hệ thống",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 0,permissions.Count ) } );
-			roles.Add ( new Role ( ) { IsRoot = YesNo.NO,RoleName = "Reviewer",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 2,permissions.Count - 2 ) } );
-			roles.Add ( new Role ( ) { IsRoot = YesNo.NO,RoleName = "User",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 2,1 ) } );
-			roles.Add ( new Role ( ) { IsRoot = YesNo.NO,RoleName = "Manager",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 2,permissions.Count - 2 ) } );
-			roles.Add ( new Role ( ) { IsRoot = YesNo.NO,RoleName = "Staff",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 2,permissions.Count - 2 ) } );
-
+			roles.Add ( new Role ( ) { IsRoot = YesNo.YES,RoleName = "Admin",IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 0,permissions.Count ) } );
+			roles.Add ( new Role ( ) { IsRoot = YesNo.NO,RoleName = "Staff", IntRole = UserRole.ADMIN,RoleStatus = RoleStatus.ACTIVATED,Permissions = permissions.GetRange ( 2,permissions.Count - 2 ) } );
 			context.Roles.AddOrUpdate ( r => r.Id,roles.ToArray ( ) );
 
 			#endregion
@@ -52,10 +44,7 @@
 			string _defPassword = "123456";
 			List<User> users = new List<User> ( );
 			users.Add ( new User ( ) { Username = "admin@gmail.com",Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 0,1 ),FullName = "Administrator"} );
-			users.Add ( new User ( ) { Username = "staff@gmail.com",Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 2,1 ),FullName = "Staff" } );
-			users.Add ( new User ( ) { Username = "reviewer@gmail.com", Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 1,1 ),FullName = "Reviewer" } );
-			users.Add ( new User ( ) { Username = "manager@gmail.com",Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 3,1 ),FullName = "Manager"} );
-			users.Add ( new User ( ) { Username = "user@gmail.com",Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 3,1 ),FullName = "User"} );
+			users.Add ( new User ( ) { Username = "staff@gmail.com",Password = Utilities.Encrypt ( _defPassword ),IsRemember = false,IsActive = true,Roles = roles.GetRange ( 0,1 ),FullName = "Staff" } );
 			context.Users.AddOrUpdate ( u => u.Id,users.ToArray ( ) );
 
 			#endregion
@@ -67,7 +56,6 @@
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
-            return;
             ReSeed(context);
           
             /*

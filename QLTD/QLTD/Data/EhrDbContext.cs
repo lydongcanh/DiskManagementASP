@@ -33,5 +33,15 @@ namespace Ehr.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Disk> Disks { get; set; }
+        public DbSet<DiskHold> DiskHolds { get; set; }
+        public DbSet<DiskTitle> DiskTitles { get; set; }
+        public DbSet<DiskType> DiskTypes { get; set; }
+        public DbSet<LateCharge> LateCharges { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Rent> Rents { get; set; }
+        public DbSet<RentDetail> RentDetails { get; set; }
+        public DbSet<RentReceipt> RentReceipts { get; set; }
     }
 }

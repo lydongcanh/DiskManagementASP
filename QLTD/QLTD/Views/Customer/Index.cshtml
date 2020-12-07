@@ -19,13 +19,13 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h5>
-                        Danh sách kháng sinh
+                        Danh sách khách hàng
                     </h5>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Danh sách kháng sinh</li>
+                        <li class="breadcrumb-item active">Danh sách khách hàng</li>
                     </ol>
                 </div>
             </div>
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-md-9">
                 <div class="card">
-                    @using (Html.BeginForm("Antimis", "Category", FormMethod.Get))
+                    @using (Html.BeginForm("Index", "Customer", FormMethod.Get))
                     {
                         <div class="card-header">
                             <div class="card-tools float-right">
@@ -92,9 +92,15 @@
                                                     <td>
                                                         @i.Name
                                                     </td>
+                                                    <td>
+                                                        @i.PhoneNumber
+                                                    </td>
+                                                    <td>
+                                                        @i.Address
+                                                    </td>
 
                                                     <td class="project-actions text-right">
-                                                        <button onclick="EditAntimi(@i.Id,'@i.Name')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi(@i.Id,'@i.Name','@i.PhoneNumber','@i.Address')" class="btn btn-success btn-sm">
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
@@ -113,14 +119,26 @@
             </div>
             <div class="col-md-3">
                 <div class="card">
-                    <form id="form-antimi">
+                    <form id="form-add-customer">
                         <div class="card-body">
                             <input type="hidden" name="Id" id="Id" />
                             <div class="form-group">
                                 <label>
-                                    Tên kháng sinh
+                                    Tên khách hàng
                                 </label>
-                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên kháng sinh" />
+                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên khách hàng" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Số điện thoại
+                                </label>
+                                <input type="text" class="form-control" name="PhoneNumber" id="PhoneNumber" placeholder="Nhập số điện thoại" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Địa chỉ
+                                </label>
+                                <input type="text" class="form-control" name="Address" id="Address" placeholder="Nhập địa chỉ" />
                             </div>
 
                         </div>
@@ -152,7 +170,7 @@
     var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
 }
 <script>
-    var flag = "/Category/Antimis"
+    var flag = "/Customer/Index"
 </script>
 <script>
     $(document).ajaxStart(function () {
@@ -163,19 +181,23 @@
         $("#ezloader").css("display", "none");
     });
 
-    $("#form-antimi").submit(function (e) {
+    $("#form-add-customer").submit(function (e) {
         e.preventDefault();
         var id = $('#Id').val();
         var name = $('#Name').val();
+        var PhoneNumber = $('#PhoneNumber').val();
+        var Address = $('#Address').val();
         if (name !== "") {
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 data: {
                     Id: id,
-                    Name: name
+                    Name: name,
+                    PhoneNumber: PhoneNumber,
+                    Address: Address,
                 },
-                url: "/Category/AddAntimi",
+                url: "/Customer/AddCustomer",
                 success: function (item) {
                     if (item.success) {
                         toastr.success(item.message);
@@ -195,18 +217,22 @@
                 }
             });
         } else {
-            toastr.warning("Vui lòng nhập tên kháng sinh");
+            toastr.warning("Vui lòng nhập tên khách hàng");
         }
     });
 
     function ResetForm() {
         var id = $('#Id').val('');
         var name = $('#Name').val('');
+        var name = $('#PhoneNumber').val('');
+        var name = $('#Address').val('');
     }
 
-    function EditAntimi(id,name) {
+    function EditAntimi(id, name, PhoneNumber, Address) {
         var id = $('#Id').val(id);
         var name = $('#Name').val(name);
+        var PhoneNumber = $('#PhoneNumber').val(PhoneNumber);
+        var Address = $('#Address').val(Address);
         $("#Name").focus();
     }
 </script>

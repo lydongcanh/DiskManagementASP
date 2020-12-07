@@ -1,23 +1,24 @@
-﻿using Ehr.Common.Constraint;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Ehr.Models
 {
-    public class Disk
+    public class Order
     {
         public int Id { get; set; }
         /// <summary>
-        /// Mã đĩa
+        /// Mã hoá đơn
         /// </summary>
         public string Code { get; set; }
         /// <summary>
-        /// Trạng thái
+        /// Ngày thanh toán
         /// </summary>
-        public DiskStatus Status { get; set; }
-
-        public virtual DiskTitle DiskTitle { get; set; }
+        public DateTime PayDate { get; set; }
+        /// <summary>
+        /// Ngày thanh toán
+        /// </summary>
+        public virtual LateCharge Detail { get; set; }
     }
 }

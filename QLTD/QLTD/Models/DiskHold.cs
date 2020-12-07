@@ -1,23 +1,24 @@
-﻿using Ehr.Common.Constraint;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Ehr.Models
 {
-    public class Disk
+    public class DiskHold
     {
         public int Id { get; set; }
         /// <summary>
-        /// Mã đĩa
+        /// Ngày đặt
         /// </summary>
-        public string Code { get; set; }
+        public DateTime HoldDate { get; set; }
         /// <summary>
-        /// Trạng thái
+        /// Khách đặt
         /// </summary>
-        public DiskStatus Status { get; set; }
-
+        public virtual Customer Customer { get; set; }
+        /// <summary>
+        /// Tiêu đề đặt
+        /// </summary>
         public virtual DiskTitle DiskTitle { get; set; }
     }
 }

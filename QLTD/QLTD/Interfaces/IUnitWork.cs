@@ -19,6 +19,16 @@ namespace Ehr.Interfaces
         IRepository<User> User { get; }
         IRepository<Permission> Permission { get; }
         IRepository<Role> Role { get; }
+        IRepository<Customer> Customer { get; }
+        IRepository<Disk> Disk { get; }
+        IRepository<DiskHold> DiskHold { get; }
+        IRepository<DiskTitle> DiskTitle { get; }
+        IRepository<DiskType> DiskType { get; }
+        IRepository<LateCharge> LateCharge { get; }
+        IRepository<Order> Order { get; }
+        IRepository<Rent> Rent { get; }
+        IRepository<RentDetail> RentDetail { get; }
+        IRepository<RentReceipt> RentReceipt { get; }
         void Commit();
     }
 }

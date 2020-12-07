@@ -16,8 +16,8 @@
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu"
                 data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
-            with font-awesome or any other icon font library -->
-                @if (User.HavingRight("DASHBOARD"))
+    with font-awesome or any other icon font library -->
+                @if (User.HavingRight("RENT_DISK"))
                 {
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
@@ -35,9 +35,11 @@
                             </p>
                         </a>
                     </li>
+                }
 
-                    <li class="nav-header">Quản lý</li>
-
+                <li class="nav-header">Quản lý danh mục</li>
+                @if (User.HavingRight("CUS_MNT"))
+                {
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
                             <i class="fa fa-database nav-icon"></i>
@@ -46,6 +48,10 @@
                             </p>
                         </a>
                     </li>
+                }
+                @if (User.HavingRight("DISK_MNT"))
+                {
+
                     <li class="nav-item">
                         <a href="~/Disk/Index" class="nav-link">
                             <i class="fa fa-database nav-icon"></i>
@@ -70,30 +76,6 @@
                             </p>
                         </a>
                     </li>
-                }
-                @if (User.HavingRight("DATA_INPUT"))
-                {
-                }
-                @if (User.HavingRight("DATA_REVIEW"))
-                {
-                }
-                @if (User.HavingRight("DATA_MNT"))
-                {
-                }
-                @if (User.HavingRight("USER_MNT"))
-                {
-                }
-
-
-                @if (User.HavingRight("USER_MNT"))
-                {
-                }
-
-                @if (User.HavingRight("SYSTEM_CFG"))
-                {
-                }
-                @if (User.HavingRight("HISTORY"))
-                {
                 }
             </ul>
         </nav>
