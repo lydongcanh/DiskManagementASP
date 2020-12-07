@@ -279,9 +279,9 @@
     </Compile>
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IUnitWork.cs" />
-    <Compile Include="Migrations\202012071648238_cd.cs" />
-    <Compile Include="Migrations\202012071648238_cd.Designer.cs">
-      <DependentUpon>202012071648238_cd.cs</DependentUpon>
+    <Compile Include="Migrations\202012071910014_cd.cs" />
+    <Compile Include="Migrations\202012071910014_cd.Designer.cs">
+      <DependentUpon>202012071910014_cd.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -2139,6 +2139,9 @@
     <Content Include="Views\User\Success.cshtml" />
     <Content Include="Views\User\Approve.cshtml" />
     <Content Include="Views\Customer\Index.cshtml" />
+    <Content Include="Views\Disk\Disk.cshtml" />
+    <Content Include="Views\Disk\DiskTitle.cshtml" />
+    <Content Include="Views\Disk\DiskType.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2149,7 +2152,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Views\Disk\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin-lte\plugins\Scripts\jquery-3.3.1.slim.min.map" />
@@ -2166,8 +2168,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202012071648238_cd.resx">
-      <DependentUpon>202012071648238_cd.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202012071910014_cd.resx">
+      <DependentUpon>202012071910014_cd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

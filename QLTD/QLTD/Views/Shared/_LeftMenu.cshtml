@@ -17,11 +17,19 @@
                 data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
     with font-awesome or any other icon font library -->
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-copy nav-icon"></i>
+                        <p>
+                            Trang chủ
+                        </p>
+                    </a>
+                </li>
                 @if (User.HavingRight("RENT_DISK"))
                 {
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                            <i class="fas fa-copy nav-icon"></i>
                             <p>
                                 Giữ đĩa
                             </p>
@@ -29,7 +37,7 @@
                     </li>
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                            <i class="fas fa-book nav-icon"></i>
                             <p>
                                 Trả đĩa
                             </p>
@@ -42,7 +50,7 @@
                 {
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                            <i class="fas fa-user-alt nav-icon"></i>
                             <p>
                                 Khách hàng
                             </p>
@@ -53,24 +61,24 @@
                 {
 
                     <li class="nav-item">
-                        <a href="~/Disk/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                        <a href="~/Disk/Disk" class="nav-link">
+                            <i class="fa fa-compass nav-icon"></i>
                             <p>
                                 Đĩa
                             </p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="~/DiskTitle/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                        <a href="~/Disk/DiskTitle" class="nav-link">
+                            <i class="fa fa-tag nav-icon"></i>
                             <p>
                                 Tiêu đề
                             </p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="~/DiskType/Index" class="nav-link">
-                            <i class="fa fa-database nav-icon"></i>
+                        <a href="~/Disk/DiskType" class="nav-link">
+                            <i class=" fa fa-database nav-icon"></i>
                             <p>
                                 Loại đĩa
                             </p>

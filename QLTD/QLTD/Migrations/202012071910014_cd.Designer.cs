@@ -13,7 +13,7 @@ namespace Ehr.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202012071648238_cd"; }
+            get { return "202012071910014_cd"; }
         }
         
         string IMigrationMetadata.Source

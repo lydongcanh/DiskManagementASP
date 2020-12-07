@@ -1,31 +1,44 @@
 ﻿
 @{
-    ViewBag.Title = "Danh sách khách hàng";
+    ViewBag.Title = "Danh sách tiêu đề";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-
 @using System.Linq
 @using Ehr.Common.Constraint
 @using Ehr.Models
 @using Ehr.Common.UI;
 @using System.ComponentModel.DataAnnotations;
 @using Ehr.Auth;
-@model IEnumerable<Ehr.Models.Customer>
+@model IEnumerable<Ehr.Models.DiskTitle>
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.25rem + 2px);
+        padding: .75rem 1rem;
+        border: 1px solid #ced4da;
+        display: block;
+    }
 
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-selection__arrow {
+        padding-top: 2rem;
+    }
+</style>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h5>
-                        Danh sách khách hàng
+                        Danh sách tiêu đề
                     </h5>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Danh sách khách hàng</li>
+                        <li class="breadcrumb-item active">Danh sách tiêu đề</li>
                     </ol>
                 </div>
             </div>
@@ -37,7 +50,7 @@
         <div class="row">
             <div class="col-md-9">
                 <div class="card">
-                    @using (Html.BeginForm("Index", "Customer", FormMethod.Get))
+                    @using (Html.BeginForm("DiskTitle", "Disk", FormMethod.Get))
                     {
                         <div class="card-header">
                             <div class="card-tools float-right">
@@ -89,18 +102,39 @@
                                                         @dem
                                                         @{dem++;}
                                                     </td>
+                                                    @{
+                                                        var state = i.Status.GetAttribute<DisplayAttribute>().Name;
+                                                        var bg = "";
+                                                        if (i.Status == TitleStatus.PENDING)
+                                                        {
+                                                            bg = "bg-success";
+                                                        }
+                                                        else if (i.Status == TitleStatus.CLOSED)
+                                                        {
+                                                            bg = "bg-red";
+                                                        }
+                                                    }
+                                                    <td>
+                                                        @i.Code
+                                                    </td>
                                                     <td>
                                                         @i.Name
                                                     </td>
                                                     <td>
-                                                        @i.PhoneNumber
+                                                        @i.DiskType.Name
                                                     </td>
                                                     <td>
-                                                        @i.Address
+                                                        @i.Price
+                                                    </td>
+                                                    <td>
+                                                        @i.LateCharge
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge @bg">@state</span>
                                                     </td>
 
                                                     <td class="project-actions text-right">
-                                                        <button onclick="EditAntimi(@i.Id,'@i.Name','@i.PhoneNumber','@i.Address')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi(@i.Id,'@i.Code','@i.Name','@i.Price','@i.LateCharge','@i.Description','@i.Status','@i.DiskType.Id')" class="btn btn-success btn-sm">
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
@@ -119,26 +153,74 @@
             </div>
             <div class="col-md-3">
                 <div class="card">
-                    <form id="form-add-customer">
+                    <form id="form-add-title">
                         <div class="card-body">
                             <input type="hidden" name="Id" id="Id" />
                             <div class="form-group">
                                 <label>
-                                    Tên khách hàng
+                                    Mã tiêu đề
                                 </label>
-                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên khách hàng" />
+                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã tiêu đề" />
                             </div>
                             <div class="form-group">
                                 <label>
-                                    Số điện thoại
+                                    Tên tiêu đề
                                 </label>
-                                <input type="text" class="form-control" name="PhoneNumber" id="PhoneNumber" placeholder="Nhập số điện thoại" />
+                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên tiêu đề" />
                             </div>
                             <div class="form-group">
                                 <label>
-                                    Địa chỉ
+                                    Loại
                                 </label>
-                                <input type="text" class="form-control" name="Address" id="Address" placeholder="Nhập địa chỉ" />
+                                <select id="DiskType" class="form-control select2-success select2" name="DiskType" data-dropdown-css-class="select2-green">
+                                    <option value="-1" selected>- Chọn Loại -</option>
+                                    @foreach (var item in ViewBag.DiskTypes)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    Đơn giá
+                                </label>
+                                <input type="number" class="form-control" name="Price" id="Price" placeholder="Nhập đơn giá" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Phí trễ
+                                </label>
+                                <input type="number" class="form-control" name="LateCharge" id="LateCharge" placeholder="Nhập đơn giá" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Mô tả
+                                </label>
+                                <textarea class="form-control" rows="3" name="Description" id="Description" placeholder="nhập thông tin"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Trạng thái
+                                </label>
+                                <div class="form-group clearfix">
+                                    @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ListStatus)
+                                    {
+                                        var cl = "";
+                                        var check = "";
+                                        if (item.Value != "0")
+                                        {
+                                            cl = "space";
+                                        }
+                                        var id = "radioStatus" + item.Value;
+                                        <div class="icheck-success d-inline @cl">
+                                            <input type="radio" id="@id" value="@item.Value" name="Status" @check>
+                                            <label for="@id">
+                                                @item.Text
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
                             </div>
 
                         </div>
@@ -170,7 +252,7 @@
     var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
 }
 <script>
-    var flag = "/Customer/Index"
+    var flag = "/Disk/DiskTitle"
 </script>
 <script>
     $(document).ajaxStart(function () {
@@ -181,23 +263,26 @@
         $("#ezloader").css("display", "none");
     });
 
-    $("#form-add-customer").submit(function (e) {
+    $("#form-add-title").submit(function (e) {
         e.preventDefault();
-        var id = $('#Id').val();
-        var name = $('#Name').val();
-        var PhoneNumber = $('#PhoneNumber').val();
-        var Address = $('#Address').val();
-        if (name !== "") {
+        var serializedForm = $(this).serializeArray();
+        var Code = serializedForm[1].value;
+        console.log(serializedForm);
+        if (Code !== "") {
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 data: {
-                    Id: id,
-                    Name: name,
-                    PhoneNumber: PhoneNumber,
-                    Address: Address,
+                    Id: serializedForm[0].value,
+                    Code: serializedForm[1].value,
+                    Name: serializedForm[2].value,
+                    IdType: serializedForm[3].value,
+                    Price: serializedForm[4].value,
+                    LateCharge: serializedForm[5].value,
+                    Description: serializedForm[6].value,
+                    status: serializedForm[7].value
                 },
-                url: "/Customer/AddCustomer",
+                url: "/Disk/AddDiskTitle",
                 success: function (item) {
                     if (item.success) {
                         toastr.success(item.message);
@@ -217,22 +302,30 @@
                 }
             });
         } else {
-            toastr.warning("Vui lòng nhập tên khách hàng");
+            toastr.warning("Vui lòng nhập mã tiêu đề !");
         }
     });
 
     function ResetForm() {
         var id = $('#Id').val('');
-        var name = $('#Name').val('');
-        var name = $('#PhoneNumber').val('');
-        var name = $('#Address').val('');
+        $("#form-add-title")[0].reset();
     }
 
-    function EditAntimi(id, name, PhoneNumber, Address) {
+    function EditAntimi(id, Code, Name, Price, LateCharge, Description, Status, IdType) {
+        $("#form-add-title")[0].reset();
         var id = $('#Id').val(id);
-        var name = $('#Name').val(name);
-        var PhoneNumber = $('#PhoneNumber').val(PhoneNumber);
-        var Address = $('#Address').val(Address);
-        $("#Name").focus();
+        var Code = $('#Code').val(Code);
+        var Name = $('#Name').val(Name);
+        var Price = $('#Price').val(Price);
+        var LateCharge = $('#LateCharge').val(LateCharge);
+        var Description = $('#Description').val(Description);
+        $('#DiskType').val(IdType).trigger('change');
+        if (Status == 'PENDING') {
+            $('#radioStatus0').click();
+        }else {
+
+            $('#radioStatus1').click();
+        }
+        $("#Code").focus();
     }
 </script>

@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Danh sách khách hàng";
+    ViewBag.Title = "Danh sách loại";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,7 +11,7 @@
 @using Ehr.Common.UI;
 @using System.ComponentModel.DataAnnotations;
 @using Ehr.Auth;
-@model IEnumerable<Ehr.Models.Customer>
+@model IEnumerable<Ehr.Models.DiskType>
 
 <div class="content-wrapper">
     <section class="content-header">
@@ -19,13 +19,13 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h5>
-                        Danh sách khách hàng
+                        Danh sách loại
                     </h5>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Danh sách khách hàng</li>
+                        <li class="breadcrumb-item active">Danh sách loại</li>
                     </ol>
                 </div>
             </div>
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-md-9">
                 <div class="card">
-                    @using (Html.BeginForm("Index", "Customer", FormMethod.Get))
+                    @using (Html.BeginForm("DiskType", "Disk", FormMethod.Get))
                     {
                         <div class="card-header">
                             <div class="card-tools float-right">
@@ -90,17 +90,13 @@
                                                         @{dem++;}
                                                     </td>
                                                     <td>
+                                                        @i.Code
+                                                    </td>
+                                                    <td>
                                                         @i.Name
                                                     </td>
-                                                    <td>
-                                                        @i.PhoneNumber
-                                                    </td>
-                                                    <td>
-                                                        @i.Address
-                                                    </td>
-
                                                     <td class="project-actions text-right">
-                                                        <button onclick="EditAntimi(@i.Id,'@i.Name','@i.PhoneNumber','@i.Address')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi(@i.Id,'@i.Code','@i.Name')" class="btn btn-success btn-sm">
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
@@ -119,28 +115,21 @@
             </div>
             <div class="col-md-3">
                 <div class="card">
-                    <form id="form-add-customer">
+                    <form id="form-add-type">
                         <div class="card-body">
                             <input type="hidden" name="Id" id="Id" />
                             <div class="form-group">
                                 <label>
-                                    Tên khách hàng
+                                    Mã loại
                                 </label>
-                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên khách hàng" />
+                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã loại" />
                             </div>
                             <div class="form-group">
                                 <label>
-                                    Số điện thoại
+                                    Tên loại
                                 </label>
-                                <input type="text" class="form-control" name="PhoneNumber" id="PhoneNumber" placeholder="Nhập số điện thoại" />
+                                <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên loại" />
                             </div>
-                            <div class="form-group">
-                                <label>
-                                    Địa chỉ
-                                </label>
-                                <input type="text" class="form-control" name="Address" id="Address" placeholder="Nhập địa chỉ" />
-                            </div>
-
                         </div>
                         <div class="card-footer" style="background-color:white">
                             <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
@@ -170,7 +159,7 @@
     var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
 }
 <script>
-    var flag = "/Customer/Index"
+    var flag = "/Disk/DiskType"
 </script>
 <script>
     $(document).ajaxStart(function () {
@@ -181,23 +170,21 @@
         $("#ezloader").css("display", "none");
     });
 
-    $("#form-add-customer").submit(function (e) {
+    $("#form-add-type").submit(function (e) {
         e.preventDefault();
         var id = $('#Id').val();
+        var Code = $('#Code').val();
         var name = $('#Name').val();
-        var PhoneNumber = $('#PhoneNumber').val();
-        var Address = $('#Address').val();
-        if (name !== "") {
+        if (Code !== "") {
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 data: {
                     Id: id,
+                    Code: Code,
                     Name: name,
-                    PhoneNumber: PhoneNumber,
-                    Address: Address,
                 },
-                url: "/Customer/AddCustomer",
+                url: "/Disk/AddDiskType",
                 success: function (item) {
                     if (item.success) {
                         toastr.success(item.message);
@@ -217,22 +204,19 @@
                 }
             });
         } else {
-            toastr.warning("Vui lòng nhập tên khách hàng");
+            toastr.warning("Vui lòng nhập mã loại !");
         }
     });
 
     function ResetForm() {
         var id = $('#Id').val('');
-        var name = $('#Name').val('');
-        var name = $('#PhoneNumber').val('');
-        var name = $('#Address').val('');
+        $("#form-add-type")[0].reset();
     }
 
-    function EditAntimi(id, name, PhoneNumber, Address) {
+    function EditAntimi(id, Code, Name) {
         var id = $('#Id').val(id);
-        var name = $('#Name').val(name);
-        var PhoneNumber = $('#PhoneNumber').val(PhoneNumber);
-        var Address = $('#Address').val(Address);
-        $("#Name").focus();
+        var Code = $('#Code').val(Code);
+        var Name = $('#Name').val(Name);
+        $("#Code").focus();
     }
 </script>

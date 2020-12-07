@@ -146,7 +146,6 @@
                     <a class="btn btn-warning" href="#" onclick="window.history.back();">Quay về</a>&nbsp;&nbsp;&nbsp;
                     @if (User.UserId == Model.Id)
                     {
-                        <a class="btn btn-or-cus" href="/Account/ChangePassword/@Model.Id">Đổi mật khẩu</a>
                         <a class="btn bg-success float-right" href="/User/UpdateProfile/@Model.Id">Cập nhật thông tin</a>
                     }
                 </div>
