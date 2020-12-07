@@ -8,7 +8,7 @@
 
     <div class="card-body login-card-body">
         <div class="login-logo">
-            <a href="#"><img src="~/Content/img/VACBanner.png" style="width:320px" /></a>
+            <h3 style="color:#158052">Quản lý thuê đĩa</h3>
         </div>
         <p class="login-box-msg">Hãy đăng nhập để bắt đầu làm việc!</p>
         @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -36,9 +36,6 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <a href="/User/Register" style="color:#158052"> Đăng ký tài khoản </a>
-                </div>
-                <div class="col-md-6">
                     @Html.ActionLink("Tôi đã quên mật khẩu?", "ForgotPassword")
                 </div>
             </div>
@@ -46,6 +43,6 @@
     </div>
     <!-- /.login-card-body -->
     <div class="card-footer">
-        <strong>&copy; 2020.</strong>  <a href="https://eznet.com.vn"> EZ NET Technology Company.</a>
+        <strong>&copy; 2020.</strong>  <a href="#"> Phần mêm quản lý thuê đĩa.</a>
     </div>
 </div>

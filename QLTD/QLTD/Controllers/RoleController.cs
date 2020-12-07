@@ -15,12 +15,10 @@ namespace Ehr.Controllers
     public class RoleController : BaseController
     {
         private readonly UnitWork unitWork;
-        private readonly AuditTrailBussiness auditTrailBussiness;
 
-        public RoleController(UnitWork unitWork, AuditTrailBussiness auditTrailBussiness)
+        public RoleController(UnitWork unitWork)
         {
             this.unitWork = unitWork;
-            this.auditTrailBussiness = auditTrailBussiness;
         }
             // GET: Role
         [HttpGet]
@@ -222,27 +220,6 @@ namespace Ehr.Controllers
             
             unitWork.Role.Insert(newRole);
             unitWork.Commit();
-            #region Audit Trail
-            var user = unitWork.User.GetById(this.User.UserId);
-
-            string lsPer = "";
-
-            foreach (var item in newRole.Permissions)
-            {
-                lsPer += " - " + item.PermissionName;
-            }
-
-            RoleViewModel newObject = new RoleViewModel()
-            {
-                Id = newRole.Id,
-                RoleName = newRole.RoleName,
-                RoleStatus = newRole.RoleStatus,
-                IsRoot = newRole.IsRoot,
-                Permissions = lsPer,
-            };
-            RoleViewModel oldObject = new RoleViewModel();
-            auditTrailBussiness.CreateAuditTrail(AuditActionType.Create, newRole.Id, "Vai trò", oldObject, newObject, user.Username);
-            #endregion
 
             return RedirectToAction("Index","Role");
         
@@ -402,28 +379,6 @@ namespace Ehr.Controllers
             unitWork.Role.Update(roles);
             unitWork.Commit();
 
-            #region Audit Trail
-            var newroles = unitWork.Role.GetById(int.Parse(id));
-            var user = unitWork.User.GetById(this.User.UserId);
-
-            string lsPer = "";
-
-            foreach (var item in newroles.Permissions)
-            {
-                lsPer += " - " + item.PermissionName;
-            }
-
-            RoleViewModel newObject = new RoleViewModel()
-            {
-                Id = newroles.Id,
-                RoleName = newroles.RoleName,
-                RoleStatus = newroles.RoleStatus,
-                IsRoot = newroles.IsRoot,
-                Permissions = lsPer,
-            };
-           
-            auditTrailBussiness.CreateAuditTrail(AuditActionType.Update, newRole.Id, "Vai trò", oldObject, newObject, user.Username);
-            #endregion
             return RedirectToAction("Index", unitWork.User.Get().ToList());
         }
 

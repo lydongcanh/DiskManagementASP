@@ -59,13 +59,6 @@
 			context.Users.AddOrUpdate ( u => u.Id,users.ToArray ( ) );
 
 			#endregion
-
-			#region Mailconfig
-			List<MailConfig> mailcfgs = new List<MailConfig> ( );
-			mailcfgs.Add ( new MailConfig() { EmailCC = "tiennguyenthanh@outlook.com", EmailSend = "ezhr2020.recruit@gmail.com", Port = 587, Password = "Admin@it2", ServerAddress = "smtp.gmail.com", Username = "ezhr2020.recruit@gmail.com", UseSSL = true } );
-			context.MailConfigs.AddOrUpdate ( m => m.Id,mailcfgs.ToArray ( ) );
-			#endregion
-
 		}
 		protected override void Seed(EhrDbContext context)
         {

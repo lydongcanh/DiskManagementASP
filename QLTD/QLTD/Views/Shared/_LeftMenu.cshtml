@@ -3,9 +3,9 @@
 <aside class="main-sidebar elevation-3 sidebar-light-green" style="background-color: #ffffff">
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
-        <img src="~/Content/img/smallicon.png" class="brand-image img-circle elevation-3"
+        <img src="~/Content/img/smalldisk.png" class="brand-image img-circle elevation-3"
              style="opacity: .8">
-        <span class="brand-text font-weight-light badge" style="background-color:#14a33e;text-align:center;font-size:large;font-weight:900;color:white;min-width:170px;">V I V E T 4 . 0</span>
+        <span class="brand-text font-weight-light badge" style="background-color:#14a33e;text-align:center;font-size:large;font-weight:900;color:white;min-width:170px;">QUẢN LÝ THUÊ ĐĨA</span>
     </a>
 
     <!-- Sidebar -->
@@ -16,194 +16,84 @@
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu"
                 data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
-                with font-awesome or any other icon font library -->
+            with font-awesome or any other icon font library -->
                 @if (User.HavingRight("DASHBOARD"))
                 {
                     <li class="nav-item">
-                        <a href="/" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <a href="~/Customer/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
                             <p>
-                                Báo cáo chung
-                                <i class="right badge badge-danger"></i>
+                                Giữ đĩa
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/Customer/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
+                            <p>
+                                Trả đĩa
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-header">Quản lý</li>
+
+                    <li class="nav-item">
+                        <a href="~/Customer/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
+                            <p>
+                                Khách hàng
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/Disk/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
+                            <p>
+                                Đĩa
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/DiskTitle/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
+                            <p>
+                                Tiêu đề
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/DiskType/Index" class="nav-link">
+                            <i class="fa fa-database nav-icon"></i>
+                            <p>
+                                Loại đĩa
                             </p>
                         </a>
                     </li>
                 }
                 @if (User.HavingRight("DATA_INPUT"))
                 {
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-edit"></i>
-                            <p>
-                                Quản lý danh mục
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="~/Product/Index" class="nav-link">
-                                    <i class="fa fa-database nav-icon"></i>
-                                    <p>
-                                        Sản phẩm
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/Category/Animals" class="nav-link">
-                                    <i class="fa fa-tag nav-icon"></i>
-                                    <p>
-                                        Thú nuôi
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/Category/Antimis" class="nav-link">
-                                    <i class="fa fa-compass nav-icon"></i>
-                                    <p>Kháng sinh</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="~/Reference/Index" class="nav-link">
-                            <i class="nav-icon fas fa-copy"></i>
-                            <p>
-                                Bảng tham chiếu
-                            </p>
-                        </a>
-                    </li>
                 }
                 @if (User.HavingRight("DATA_REVIEW"))
                 {
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-edit"></i>
-                            <p>
-                                Duyệt dữ liệu
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/QuestionnaireReview/Wait" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>
-                                        Danh sách chờ duyệt
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/QuestionnaireReview/Approve" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Danh sách đã duyệt</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/QuestionnaireReview/Reject" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Danh sách từ chối</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
                 }
                 @if (User.HavingRight("DATA_MNT"))
                 {
-                    <li class="nav-item">
-                        <a href="/QuestionnaireManage/Index" class="nav-link">
-                            <i class="nav-icon fas fa-table"></i>
-                            <p>
-                                Quản lý dữ liệu
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/ProductInfor/Index" class="nav-link">
-                            <i class="nav-icon fas fa-book"></i>
-                            <p>
-                                Lịch sử giao dịch
-                            </p>
-                        </a>
-                    </li>
                 }
                 @if (User.HavingRight("USER_MNT"))
                 {
-                    <li class="nav-item">
-                        <a href="~/User/Approve" class="nav-link">
-                            <i class="nav-icon fas fa-user-alt"></i>
-                            <p>
-                                Duyệt người dùng
-                            </p>
-                        </a>
-                    </li>
                 }
 
-                <li class="nav-header">Hệ thống</li>
 
                 @if (User.HavingRight("USER_MNT"))
                 {
-                    <li class="nav-item">
-                        <a href="~/Role/Index" class="nav-link">
-                            <i class="nav-icon fas fa-copy"></i>
-                            <p>
-                                Danh sách nhóm quyền
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/User/Index" class="nav-link">
-                            <i class="nav-icon far fa-user"></i>
-                            <p>
-                                Quản lý người dùng
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="~/User/ResetPWD" class="nav-link">
-                            <i class="nav-icon fas fa-key"></i>
-                            <p>
-                                Đặt lại mật khẩu
-                            </p>
-                        </a>
-                    </li>
                 }
 
                 @if (User.HavingRight("SYSTEM_CFG"))
                 {
-                    <li class="nav-item has-treeview">
-                        <a href="/MailConfig/Index" class="nav-link">
-                            <i class="nav-icon far fa-envelope "></i>
-                            <p>
-                                Cấu hình email
-                            </p>
-                        </a>
-                    </li>
                 }
                 @if (User.HavingRight("HISTORY"))
                 {
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-history"></i>
-                            <p>
-                                Lịch sử
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/AuditTrail/Index" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Lịch sử thao tác</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/AuditTrail/Login" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Lịch sử đăng nhập</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
                 }
             </ul>
         </nav>

@@ -26,15 +26,13 @@ namespace Ehr.Controllers
     [AllowAnonymous]
     public class AccountController : BaseController
     {
-        private readonly AuditTrailBussiness auditTrailBussiness;
         private readonly CustomMembership membership;
         private string keyCookie = ConfigurationManager.AppSettings["cookie"];
         private readonly UnitWork unitWork;
-        public AccountController(CustomMembership membership, UnitWork unitWork, AuditTrailBussiness auditTrailBussiness)
+        public AccountController(CustomMembership membership, UnitWork unitWork)
         {
             this.unitWork = unitWork;
             this.membership = membership;
-            this.auditTrailBussiness = auditTrailBussiness;
         }
 
         public ActionResult Index()
@@ -153,21 +151,18 @@ namespace Ehr.Controllers
                                     }
                                     Response.Cookies.Add(cookie);
                                 }
-
-                                auditTrailBussiness.CreateLoginAuditTrail(loginViewModel.Username, userip, YesNo.YES, "");
+                                
                             }
                         }
                         else
                         {
                             ModelState.AddModelError("", "Tài khoản của bạn đang bị khóa !");
-                            auditTrailBussiness.CreateLoginAuditTrail(loginViewModel.Username, userip, YesNo.NO, "Tài khoản bị khóa");
                             return View(loginViewModel);
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Tài khoản của bạn chưa được cấp quyền !");
-                        auditTrailBussiness.CreateLoginAuditTrail(loginViewModel.Username, userip, YesNo.NO, "Tài khoản chưa được cấp quyền");
                         return View(loginViewModel);
                     }
 
@@ -182,7 +177,6 @@ namespace Ehr.Controllers
                 }
             }
             ModelState.AddModelError("", "Thông tin đăng nhập bị sai !");
-            auditTrailBussiness.CreateLoginAuditTrail(loginViewModel.Username, userip, YesNo.NO, "Sai thông tin đăng nhập");
             return View(loginViewModel);
         }
 
@@ -269,37 +263,6 @@ namespace Ehr.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ForgotPassword(string Username)
         {
-            EZMailer mailer = new EZMailer();
-            string message = "";
-            var user = unitWork.User.Get(s => s.Username == Username).FirstOrDefault();
-            if (user != null)
-            {
-                if (user.IsActive)
-                {
-                    string resetCode = Guid.NewGuid().ToString();
-                    var resetUrl = "/Account/ResetPassword/" + resetCode;
-                    var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, resetUrl);
-                    /// Config mail với host của Gmail
-                    var mailConfig = unitWork.MailConfig.Get().FirstOrDefault();
-                    string subject = "Thiết lập lại mật khẩu";
-                    string content = "Xin chào, <br /><br />Chúng tôi vừa nhận yêu cầu thiết lập lại mật khẩu cho bạn. Vui lòng nhấn vào đường link bên dưới để đặt lại mật khẩu."
-                                + "<br /><br /><a href=" + link + ">Đường dẫn thiết lập mật khẩu</a>";
-                    EZMailer.SendEmail(mailConfig.ServerAddress, mailConfig.Port, 0, mailConfig.UseSSL, mailConfig.EmailSend, Username, subject, content, mailConfig.Username, mailConfig.Password,mailConfig.EmailCC,null);
-                    user.ResetPasswordCode = resetCode;
-                    unitWork.User.Update(user);
-                    unitWork.Commit();
-                    message = "Đường dẫn thiết lập lại mật khẩu đã được gởi đến email của bạn.";
-                }
-                else
-                {
-                    message = "Tài khoản của bạn đang bị khóa. Vui lòng liên hệ quản trị viên.";
-                }
-            }
-            else
-            {
-                message = "Không tìm thấy người dùng.";
-            }
-            ViewBag.Message = message;
             return View();
         }
 
@@ -387,52 +350,14 @@ namespace Ehr.Controllers
 
         public ActionResult ChangePassword(int? id)
         {
-            if (id == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            var user = unitWork.User.GetById(id.Value);
-
-            if (user != null)
-            {
-                if (user.Id == User.UserId)
-                {
-                    return View(new ChangePasswordViewModel { Id = user.Id });
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
 
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ChangePassword(ChangePasswordViewModel model)
+        public ActionResult ChangePassword()
         {
-            string message = "";
-            if (ModelState.IsValid)
-            {
-                var user = unitWork.User.GetById(model.Id);
-                if (user != null)
-                {
-                    if (Utilities.Encrypt(model.OldPassword) == user.Password)
-                    {
-                        user.Password = Utilities.Encrypt(model.NewPassword);
-                        unitWork.User.Update(user);
-                        unitWork.Commit();
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                message = "Something wrong !";
-            }
-            ViewBag.Message = message;
-            return View(model);
+            return View();
         }
 
     }

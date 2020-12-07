@@ -25,12 +25,10 @@ namespace Ehr.Controllers
 
 
         private readonly UnitWork unitWork;
-        private readonly AuditTrailBussiness auditTrailBussiness;
 
-        public UserController(UnitWork unitWork, AuditTrailBussiness auditTrailBussiness)
+        public UserController(UnitWork unitWork)
         {
             this.unitWork = unitWork;
-            this.auditTrailBussiness = auditTrailBussiness;
         }
 
 		[HttpGet]
@@ -442,64 +440,12 @@ namespace Ehr.Controllers
             var user = unitWork.User.GetById(this.User.UserId);
 
             var usertype = newUser.UserType.ToString();
-            #region Audit trail
-            UserViewModel newObject = new UserViewModel()
-            {
-                Id = newUser.Id,
-                Username = newUser.Username,
-                Password = newUser.Password,
-                IsActive = newUser.IsActive,
-                FullName = newUser.FullName,
-                Image = newUser.Image,
-                Email = newUser.Email,
-                PhoneNumber = newUser.PhoneNumber,
-                Address = newUser.Address,
-                Gender = newUser.Gender,
-                Experience = newUser.Experience,
-                IsCentral = newUser.IsCentral,
-                Province = newUser.Province,
-                UserType = usertype,
-                Roles = lsroles
-            };
-            UserViewModel oldObject = new UserViewModel()
-            {
-                Id = newUser.Id,
-                Username = "",
-                Password = "",
-                IsActive = false,
-                FullName = "",
-                Image = "",
-                Email = "",
-                PhoneNumber = "",
-                Address = "",
-                Gender = "",
-                Experience = "",
-                IsCentral = false,
-                Province = 0,
-                UserType = "",
-                Roles = ""
-            };
-            auditTrailBussiness.CreateAuditTrail(AuditActionType.Create, newUser.Id, "Người dùng", oldObject, newObject, user.Username);
-            #endregion
             ViewBag.Message = message;
             return RedirectToAction("Index", "User");
         }
 
         private void SendVerifyConfirm(User user)
         {
-            EZMailer mailer = new EZMailer();
-            string confirmCode = Guid.NewGuid().ToString();
-            var resetUrl = "/Account/ConfirmPassword/" + confirmCode;
-            var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, resetUrl);
-            /// Config mail với host của Gmail
-
-            var mailConfig = unitWork.MailConfig.Get().FirstOrDefault();
-
-            string subject = "Confirm your account";
-            string content = "Hi, <br /><br />We got request for create new account for you. Please click on the below to confirm your password"
-                        + "<br /><br /><a href=" + link + ">Confirm password link</a>";
-            EZMailer.SendEmail(mailConfig.ServerAddress, mailConfig.Port, 0, mailConfig.UseSSL, mailConfig.EmailSend, user.Username, subject, content, mailConfig.EmailSend, mailConfig.Password, mailConfig.EmailCC, null);
-            user.ConfirmPasswordCode = confirmCode;
             unitWork.User.Update(user);
             unitWork.Commit();
         }
@@ -612,7 +558,6 @@ namespace Ehr.Controllers
                 Roles = newroles
             };
           
-            auditTrailBussiness.CreateAuditTrail(AuditActionType.Update, newUser.Id, "Người dùng", oldObject, newObject, user.Username);
 
             return RedirectToAction("Index", unitWork.User.Get().ToList());
 
@@ -706,7 +651,6 @@ namespace Ehr.Controllers
                                  Gender = newUser.Gender,
                                  Experience = newUser.Experience,
                              }).FirstOrDefault();
-            auditTrailBussiness.CreateAuditTrail(AuditActionType.Update, updateUser.Id, "Người dùng", oldObject, newObject, currentuser.Username);
 
             string keyCookie = ConfigurationManager.AppSettings["cookie"];
             HttpCookie cookie = new HttpCookie(keyCookie, "");
