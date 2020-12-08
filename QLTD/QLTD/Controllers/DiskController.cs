@@ -430,12 +430,13 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("DISK_MNT")]
-        public JsonResult AddDiskTitle(int? Id, string Code, string Name,double Price,double LateCharge, string Description, TitleStatus status, int IdType)
+        public JsonResult AddDiskTitle(DiskTitle diskTitle)
         {
             try
             {
-                var checkex = CheckExistTitle(Code);
-                var Type = unitWork.DiskType.GetById(IdType);
+                var diskid = int.Parse(Request.Form.Get("DiskType"));
+                var checkex = CheckExistTitle(diskTitle.Code);
+                var Type = unitWork.DiskType.GetById(diskid);
                 if (Type == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy loại !" }, JsonRequestBehavior.AllowGet);
@@ -444,29 +445,17 @@ namespace Ehr.Controllers
                 //{
                 //    return Json(new { success = false, message = "Trùng mã tiêu đề !" }, JsonRequestBehavior.AllowGet);
                 //}
-                if (Id == null)
+                if (diskTitle.Id > 0)
                 {
-                    var disktitle = new DiskTitle();
-                    disktitle.Code = Code;
-                    disktitle.Name = Name;
-                    disktitle.Price = Price;
-                    disktitle.LateCharge = LateCharge;
-                    disktitle.Description = Description;
-                    disktitle.Status = status;
-                    disktitle.DiskType = Type;
-                    unitWork.DiskTitle.Insert(disktitle);
-                }
-                else
-                {
-                    var oldisktitle = unitWork.DiskTitle.GetById(Id);
+                    var oldisktitle = unitWork.DiskTitle.GetById(diskTitle.Id);
                     if (oldisktitle != null)
                     {
-                        oldisktitle.Code = Code;
-                        oldisktitle.Name = Name;
-                        oldisktitle.Price = Price;
-                        oldisktitle.LateCharge = LateCharge;
-                        oldisktitle.Description = Description;
-                        oldisktitle.Status = status;
+                        oldisktitle.Code = diskTitle.Code;
+                        oldisktitle.Name = diskTitle.Name;
+                        oldisktitle.Price = diskTitle.Price;
+                        oldisktitle.LateCharge = diskTitle.LateCharge;
+                        oldisktitle.Description = diskTitle.Description;
+                        oldisktitle.Status = diskTitle.Status;
                         oldisktitle.DiskType = Type;
                         unitWork.DiskTitle.Update(oldisktitle);
                     }
@@ -474,6 +463,18 @@ namespace Ehr.Controllers
                     {
                         return Json(new { success = false, message = "Không tìm thấy tiêu đề" }, JsonRequestBehavior.AllowGet);
                     }
+                }
+                else
+                {
+                    var disktitle = new DiskTitle();
+                    disktitle.Code = diskTitle.Code;
+                    disktitle.Name = diskTitle.Name;
+                    disktitle.Price = diskTitle.Price;
+                    disktitle.LateCharge = diskTitle.LateCharge;
+                    disktitle.Description = diskTitle.Description;
+                    disktitle.Status = diskTitle.Status;
+                    disktitle.DiskType = Type;
+                    unitWork.DiskTitle.Insert(disktitle);
                 }
                 unitWork.Commit();
                 return Json(new { success = true, message = "Lưu dữ liệu thành công" }, JsonRequestBehavior.AllowGet);

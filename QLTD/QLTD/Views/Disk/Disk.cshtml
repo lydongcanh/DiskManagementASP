@@ -178,12 +178,12 @@
                                     {
                                         var cl = "";
                                         var check = "";
-                                        if (item.Value != "0")
+                                        if (item.Value == "0")
                                         {
-                                            cl = "space";
+                                            check = "checked";
                                         }
                                         var id = "radioStatus" + item.Value;
-                                        <div class="icheck-success d-inline @cl">
+                                        <div class="icheck-success d-inline">
                                             <input type="radio" id="@id" value="@item.Value" name="Status" @check>
                                             <label for="@id">
                                                 @item.Text
@@ -276,6 +276,7 @@
 
     function ResetForm() {
         var id = $('#Id').val('');
+        $('#DiskTitle').val('-1').trigger('change');
         $("#form-add-disk")[0].reset();
     }
 

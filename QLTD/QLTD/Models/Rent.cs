@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,6 +17,14 @@ namespace Ehr.Models
         /// Ngày thuê
         /// </summary>
         public DateTime RentDate { get; set; }
+        /// <summary>
+        /// khách hàng
+        /// </summary>
+        public virtual Customer Customer { get; set; }
+        /// <summary>
+        /// khách hàng
+        /// </summary>
+        public RentStatus Status { get; set; }
         /// <summary>
         /// chi tiết phiếu thuê
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,6 +21,10 @@ namespace Ehr.Models
         /// khách hàng
         /// </summary>
         public virtual Customer Customer { get; set; }
+        /// <summary>
+        /// trạng thái
+        /// </summary>
+        public ReceiptStatus Status { get; set; }
 
         /// <summary>
         /// chi tiết phiếu thuê

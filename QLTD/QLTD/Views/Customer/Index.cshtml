@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Danh sách khách hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Ehr.Data.EhrDbContext db = new Ehr.Data.EhrDbContext();
+    var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
 }
 
 
@@ -104,6 +106,13 @@
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
+                                                        @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
+                                                        {
+                                                            <button onclick="DeleteRent(@i.Id)" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-pencil-alt">
+                                                                </i><span>Xoá</span>
+                                                            </button>
+                                                        }
                                                     </td>
                                                 </tr>
                                             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,5 +21,9 @@ namespace Ehr.Models
         /// Địa chỉ
         /// </summary>
         public string Address { get; set; }
+        /// <summary>
+        /// trạng thái
+        /// </summary>
+        public CustomerStatus Status { get; set; }
     }
 }
