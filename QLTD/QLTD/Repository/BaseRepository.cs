@@ -11,10 +11,10 @@ namespace Ehr.Repository
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        internal EhrDbContext context;
+        internal QLTDDBContext context;
         internal DbSet<TEntity> dbSet;
 
-        public BaseRepository(EhrDbContext context)
+        public BaseRepository(QLTDDBContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();

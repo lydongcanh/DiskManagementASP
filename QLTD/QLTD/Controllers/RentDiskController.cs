@@ -2,7 +2,9 @@
 using Ehr.Bussiness;
 using Ehr.Common.Constraint;
 using Ehr.Common.UI;
+using Ehr.Data;
 using Ehr.Models;
+using Ehr.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -100,7 +102,7 @@ namespace Ehr.Controllers
 
 
             #region Phần sắp xếp
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
 
             //Lấy dataset rỗng
             IQueryable<Rent> Rents = null;
@@ -177,7 +179,8 @@ namespace Ehr.Controllers
                                      Value = ((int)s).ToString(),
                                      Text = s.GetAttribute<DisplayAttribute>().Name
                                  };
-
+            ViewBag.Customer = unitWork.Customer.Get();
+            ViewBag.DiskTitles = unitWork.DiskTitle.Get();
             //Hiển thị trong khoảng chọn
             if (Rents != null)
                 if (ezpage.PageModel.StartItem >= 1 && datasetSize > 0)
@@ -191,6 +194,153 @@ namespace Ehr.Controllers
 
             else
                 return View((from c in db.Rents select c).ToList());
+        }
+
+
+        [PermissionBasedAuthorize("RENT_DISK")]
+        public JsonResult GetRent(int? Id)
+        {
+            try
+            {
+                if(Id != null)
+                {
+                    var Rent = unitWork.Rent.GetById(Id);
+                    var rentview = new RentViewModel();
+                    rentview.Id = Rent.Id;
+                    rentview.Code = Rent.Code;
+                    rentview.RentLenght = Rent.RentLenght;
+                    rentview.RentDate = DataConverter.DateTime2UI_Full(Rent.RentDate);
+                    rentview.CustomerId = Rent.Customer.Id;
+                    rentview.CustomerName = Rent.Customer.Name;
+
+                    var lsrentviewdetail = new List<RentDetailViewModel>();
+                    foreach (var item in Rent.RentDetails)
+                    {
+                        var rentviewdetail = new RentDetailViewModel();
+                        rentviewdetail.Id = item.Id;
+                        rentviewdetail.DiskId = item.Disk.Id;
+                        rentviewdetail.DiskCode = item.Disk.Code;
+                        rentviewdetail.DiskName = item.Disk.DiskTitle.Name;
+                        rentviewdetail.TypeName = item.Disk.DiskTitle.DiskType.Name;
+                        rentviewdetail.Prices = item.Disk.DiskTitle.Price;
+                        lsrentviewdetail.Add(rentviewdetail);
+                    }
+
+                    if (Rent != null)
+                    {
+                        return Json(new { success = true ,Data = rentview, RentDetails = lsrentviewdetail } , JsonRequestBehavior.AllowGet);
+                    }
+                    return Json(new { success = false, message = "Không tìm thấy phiếu thuê" }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(new { success = false, message = "Không tìm thấy phiếu thuê" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        public JsonResult LoadDiskByTitle(int? Id, List<RentDetailViewModel> rents)
+        {
+            QLTDDBContext db = new QLTDDBContext();
+            var lsrentid = new List<int>();
+            if(rents!= null)
+            {
+                lsrentid = rents.Select(x => x.Id).ToList();
+            }
+            if (Id == null)
+            {
+                var json = new
+                {
+                    id = "",
+                    text = ""
+                };
+                return Json(json, JsonRequestBehavior.AllowGet);
+            }
+
+            var disk = unitWork.Disk.Get(x => x.DiskTitle.Id == Id).Where(x => !lsrentid.Contains(x.Id) && x.Status == DiskStatus.WAITING).Select(
+            c => new
+            {
+                id = c.Id,
+                text = c.Code
+            }
+            ).Distinct().OrderBy(c => c.text).ToList();
+            return Json(disk, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDisk(int? Id)
+        {
+            try
+            {
+                var item = unitWork.Disk.GetById(Id);
+                var rentviewdetail = new RentDetailViewModel();
+                rentviewdetail.DiskId = item.Id;
+                rentviewdetail.DiskCode = item.Code;
+                rentviewdetail.DiskName = item.DiskTitle.Name;
+                rentviewdetail.TypeName = item.DiskTitle.DiskType.Name;
+                rentviewdetail.Prices = item.DiskTitle.Price;
+                return Json(new { Data = rentviewdetail }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        public JsonResult AddRent(Rent rent,int? customerId, List<RentDetailViewModel> rents)
+        {
+            try
+            {
+                if(rent == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy phiếu thuê !" }, JsonRequestBehavior.AllowGet);
+                }
+                if(customerId == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy khách hàng !" }, JsonRequestBehavior.AllowGet);
+                }
+                if(rents == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy đĩa thuê !" }, JsonRequestBehavior.AllowGet);
+                }
+                var customer = unitWork.Customer.GetById(customerId);
+                if (rent.Id > 0)
+                {
+                    var oldrent = unitWork.Rent.GetById(rent.Id);
+                    oldrent.Code = rent.Code;
+                    oldrent.RentLenght = rent.RentLenght;
+                    oldrent.RentDate = rent.RentDate;
+                    oldrent.Customer = customer;
+                    unitWork.Rent.Update(oldrent);
+                    unitWork.Commit();
+                }
+                else
+                {
+                    rent.Customer = customer;
+                    unitWork.Rent.Insert(rent);
+                    unitWork.Commit();
+                    foreach (var item in rents)
+                    {
+                        var rentdetail = new RentDetail();
+                        var disk = unitWork.Disk.GetById(item.DiskId);
+                        rentdetail.Disk = disk;
+                        rentdetail.Rent = rent;
+                        unitWork.RentDetail.Insert(rentdetail);
+                        unitWork.Commit();
+                        disk.Status = DiskStatus.RENTING;
+                        unitWork.Disk.Update(disk);
+                        unitWork.Commit();
+                    }
+                }
+                return Json(new { success = true, message = "Lưu phiếu thuê thành công" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra !" }, JsonRequestBehavior.AllowGet);
+
+            }
         }
     }
 }

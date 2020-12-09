@@ -10,14 +10,14 @@
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<EhrDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<QLTDDBContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-		void ReSeed ( EhrDbContext context )
+		void ReSeed ( QLTDDBContext context )
 		{
 			
 
@@ -49,7 +49,7 @@
 
 			#endregion
 		}
-		protected override void Seed(EhrDbContext context)
+		protected override void Seed(QLTDDBContext context)
         {
 
             //  This method will be called after migrating to the latest version.

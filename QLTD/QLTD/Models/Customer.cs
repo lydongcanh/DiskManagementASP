@@ -10,6 +10,10 @@ namespace Ehr.Models
     {
         public int Id { get; set; }
         /// <summary>
+        /// Mã khách hàng
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
         /// Tên khách hàng
         /// </summary>
         public string Name { get; set; }

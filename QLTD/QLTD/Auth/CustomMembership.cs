@@ -10,9 +10,9 @@ namespace Ehr.Auth
 {
     public class CustomMembership
     {
-        private readonly EhrDbContext context;
+        private readonly QLTDDBContext context;
 
-        public CustomMembership(EhrDbContext context)
+        public CustomMembership(QLTDDBContext context)
         {
             this.context = context;
         }

@@ -8,7 +8,7 @@
 @using Ehr.Common.Constraint;
 @using Ehr.Bussiness;
 @model IEnumerable<Role>
-@{EhrDbContext db = new EhrDbContext();}
+@{QLTDDBContext db = new QLTDDBContext();}
 <div class="content-wrapper">
 
     <section class="content-header">
@@ -130,7 +130,7 @@
                             </div>
 
                         </div>
-                        <div class="card-footer" style="background-color:white">
+                        <div class="card-footer">
 
                             <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
                             <a class="btn btn-warning " href="/Role/Index">Quay về</a>

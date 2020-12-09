@@ -13,6 +13,8 @@ namespace Ehr.Common.Constraint
         [Display(Name = "Đang thuê")]
         RENTING = 1,
         [Display(Name = "Đang được giữ")]
-        HOLDING = 2
+        HOLDING = 2,
+        [Display(Name = "Xoá")]
+        DELETED = 3
     }
 }

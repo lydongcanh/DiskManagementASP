@@ -10,7 +10,7 @@
 @using Ehr.Bussiness;
 
 @{
-    EhrDbContext db = new EhrDbContext();
+    QLTDDBContext db = new QLTDDBContext();
 }
 @Scripts.Render("~/Scripts/validation/msgbox.js")
 @Scripts.Render("~/Scripts/validation/resetpass.js")
@@ -47,7 +47,7 @@
                         <input type="password" class="form-control" id="ConfirmedPassword" name="ConfirmedPassword" placeholder="Xác nhận lại mật khẩu mới">
                     </div>
                 </div>
-                <div class="card-footer" style="background-color:white">
+                <div class="card-footer">
                     <button type="submit" class="btn bg-success float-right" onclick="return validateSubmission();">Đặt lại mật khẩu</button>
                     <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>
                 </div>

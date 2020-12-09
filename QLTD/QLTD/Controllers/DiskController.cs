@@ -97,27 +97,27 @@ namespace Ehr.Controllers
 
 
             #region Phần sắp xếp
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
 
             //Lấy dataset rỗng
             IQueryable<Disk> Disks = null;
             if (sortOrder.Equals("desc"))
             {
                 if (sortProperty.Equals("Code"))
-                    Disks = from c in db.Disks orderby c.Code descending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.Code descending select c;
                 else if (sortProperty.Equals("DiskTitle"))
-                    Disks = from c in db.Disks orderby c.DiskTitle.Name descending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.DiskTitle.Name descending select c;
                 else if (sortProperty.Equals("Status"))
-                    Disks = from c in db.Disks orderby c.Status descending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.Status descending select c;
             }
             else
             {
                 if (sortProperty.Equals("Code"))
-                    Disks = from c in db.Disks orderby c.Code ascending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.Code ascending select c;
                 else if (sortProperty.Equals("DiskTitle"))
-                    Disks = from c in db.Disks orderby c.DiskTitle.Name ascending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.DiskTitle.Name ascending select c;
                 else if (sortProperty.Equals("Status"))
-                    Disks = from c in db.Disks orderby c.Status ascending select c;
+                    Disks = from c in db.Disks where c.Status != DiskStatus.DELETED orderby c.Status ascending select c;
             }
             #endregion
 
@@ -230,6 +230,27 @@ namespace Ehr.Controllers
             }
         }
 
+        public JsonResult DeleteDisk(int? Id)
+        {
+            try
+            {
+                var olddisk = unitWork.Disk.GetById(Id);
+                if (olddisk != null)
+                {
+                    olddisk.Status = DiskStatus.DELETED;
+                    unitWork.Disk.Update(olddisk);
+                    unitWork.Commit();
+                }
+                return Json(new { success = true, message = "Xoá đĩa thành công" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
         public bool CheckExist(string Code)
         {
             var check = unitWork.Disk.Get(x => x.Code.ToLower() == Code.ToLower()).FirstOrDefault();
@@ -329,35 +350,35 @@ namespace Ehr.Controllers
 
 
             #region Phần sắp xếp
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
 
             //Lấy dataset rỗng
             IQueryable<DiskTitle> DiskTitles = null;
             if (sortOrder.Equals("desc"))
             {
                 if (sortProperty.Equals("Code"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Code descending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Code descending select c;
                 else if (sortProperty.Equals("Name"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Name descending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Name descending select c;
                 else if (sortProperty.Equals("DiskType"))
-                    DiskTitles = from c in db.DiskTitles orderby c.DiskType.Name descending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.DiskType.Name descending select c;
                 else if (sortProperty.Equals("Price"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Price descending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Price descending select c;
                 else if (sortProperty.Equals("LateCharge"))
-                    DiskTitles = from c in db.DiskTitles orderby c.LateCharge descending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.LateCharge descending select c;
             }
             else
             {
                 if (sortProperty.Equals("Code"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Code ascending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Code ascending select c;
                 else if (sortProperty.Equals("Name"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Name ascending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Name ascending select c;
                 else if (sortProperty.Equals("DiskType"))
-                    DiskTitles = from c in db.DiskTitles orderby c.DiskType.Name ascending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.DiskType.Name ascending select c;
                 else if (sortProperty.Equals("Price"))
-                    DiskTitles = from c in db.DiskTitles orderby c.Price ascending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Price ascending select c;
                 else if (sortProperty.Equals("LateCharge"))
-                    DiskTitles = from c in db.DiskTitles orderby c.LateCharge ascending select c;
+                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.LateCharge ascending select c;
             }
             #endregion
 
@@ -485,6 +506,26 @@ namespace Ehr.Controllers
             }
         }
 
+
+        public JsonResult DeleteDiskTitle(int? Id)
+        {
+            try
+            {
+                var olddisktitle = unitWork.DiskTitle.GetById(Id);
+                if (olddisktitle != null)
+                {
+                    olddisktitle.Status = TitleStatus.DELETED;
+                    unitWork.DiskTitle.Update(olddisktitle);
+                    unitWork.Commit();
+                }
+                return Json(new { success = true, message = "Xoá tiêu đề thành công" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public bool CheckExistTitle(string Code)
         {
             var check = unitWork.DiskTitle.Get(x => x.Code.ToLower() == Code.ToLower()).FirstOrDefault();
@@ -567,7 +608,7 @@ namespace Ehr.Controllers
 
 
             #region Phần sắp xếp
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
 
             //Lấy dataset rỗng
             IQueryable<DiskType> DiskTypes = null;

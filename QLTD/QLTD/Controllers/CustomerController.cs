@@ -1,5 +1,6 @@
 ﻿using Ehr.Auth;
 using Ehr.Bussiness;
+using Ehr.Common.Constraint;
 using Ehr.Common.UI;
 using Ehr.Models;
 using System;
@@ -23,7 +24,7 @@ namespace Ehr.Controllers
         public ActionResult Index(string sortProperty, string sortOrder, string searchString, int? size, int? page)
         {
             var user = unitWork.User.GetById(this.User.UserId);
-            if (String.IsNullOrEmpty(sortProperty)) sortProperty = "Name";
+            if (String.IsNullOrEmpty(sortProperty)) sortProperty = "Code";
             //Mặc định là từ A-Z
             string nextSort = "";
             if (String.IsNullOrEmpty(sortOrder)) sortOrder = "desc";
@@ -52,17 +53,21 @@ namespace Ehr.Controllers
             var properties = typeof(Customer).GetProperties();
             foreach (var item in properties)
             {
+                if (item.Name.Equals("Code"))
+                {
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Mã khách hàng", Order = 2, AllowSorting = true });
+                }
                 if (item.Name.Equals("Name"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Tên khách hàng", Order = 2, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Tên khách hàng", Order = 3, AllowSorting = true });
                 }
                 if (item.Name.Equals("PhoneNumber"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Số điện thoại", Order = 3, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Số điện thoại", Order = 4, AllowSorting = true });
                 }
                 if (item.Name.Equals("Address"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Địa chỉ", Order = 4, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Địa chỉ", Order = 5, AllowSorting = true });
                 }
             }
             //sắp xếp lại các cột theo thứ tự
@@ -95,34 +100,38 @@ namespace Ehr.Controllers
 
 
             #region Phần sắp xếp
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
 
             //Lấy dataset rỗng
             IQueryable<Customer> Customers = null;
             if (sortOrder.Equals("desc"))
             {
+                if (sortProperty.Equals("Code"))
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Code descending select c;
                 if (sortProperty.Equals("Name"))
-                    Customers = from c in db.Customers orderby c.Name descending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Name descending select c;
                 else if (sortProperty.Equals("PhoneNumber"))
-                    Customers = from c in db.Customers orderby c.PhoneNumber descending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.PhoneNumber descending select c;
                 else if (sortProperty.Equals("Address"))
-                    Customers = from c in db.Customers orderby c.Address descending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Address descending select c;
             }
             else
             {
+                if (sortProperty.Equals("Code"))
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Code ascending select c;
                 if (sortProperty.Equals("Name"))
-                    Customers = from c in db.Customers orderby c.Name ascending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Name ascending select c;
                 else if (sortProperty.Equals("PhoneNumber"))
-                    Customers = from c in db.Customers orderby c.PhoneNumber ascending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.PhoneNumber ascending select c;
                 else if (sortProperty.Equals("Address"))
-                    Customers = from c in db.Customers orderby c.Address ascending select c;
+                    Customers = from c in db.Customers where c.Status == CustomerStatus.ACTIVE orderby c.Address ascending select c;
             }
             #endregion
 
             #region Phần tìm kiếm
             if (!String.IsNullOrEmpty(searchString))
             {
-                Customers = Customers.Where(c => c.Name.ToString().ToLower().Contains(searchString.ToLower()) || c.PhoneNumber.ToString().ToLower().Contains(searchString.ToLower())|| c.Address.ToString().ToLower().Contains(searchString.ToLower()));
+                Customers = Customers.Where(c => c.Code.ToString().ToLower().Contains(searchString.ToLower()) ||c.Name.ToString().ToLower().Contains(searchString.ToLower()) || c.PhoneNumber.ToString().ToLower().Contains(searchString.ToLower())|| c.Address.ToString().ToLower().Contains(searchString.ToLower()));
 
             }
             #endregion
@@ -172,21 +181,23 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("CUS_MNT")]
-        public JsonResult AddCustomer(int? Id, string Name,string PhoneNumber,string Address)
+        public JsonResult AddCustomer(int? Id,string Code ,string Name,string PhoneNumber,string Address)
         {
             try
             {
-                var checkex = CheckExist(Name, PhoneNumber);
+                var checkex = CheckExist(Code);
                 if (checkex == false)
                 {
-                    return Json(new { success = false, message = "Khách hàng đã có trên hệ thống !" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Mã khách hàng đã tồn tại !" }, JsonRequestBehavior.AllowGet);
                 }
                 if (Id == null)
                 {
                     var customer = new Customer();
+                    customer.Code = Code;
                     customer.Name = Name;
                     customer.PhoneNumber = PhoneNumber;
                     customer.Address = Address;
+                    customer.Status = CustomerStatus.ACTIVE;
                     unitWork.Customer.Insert(customer);
                 }
                 else
@@ -194,9 +205,11 @@ namespace Ehr.Controllers
                     var oldcustomer = unitWork.Customer.GetById(Id);
                     if (oldcustomer != null)
                     {
+                        oldcustomer.Code = Code;
                         oldcustomer.Name = Name;
                         oldcustomer.PhoneNumber = PhoneNumber;
                         oldcustomer.Address = Address;
+                        oldcustomer.Status = CustomerStatus.ACTIVE;
                         unitWork.Customer.Update(oldcustomer);
                     }
                     else
@@ -213,9 +226,29 @@ namespace Ehr.Controllers
             }
         }
 
-        public bool CheckExist(string Name,string PhoneNumber)
+        [PermissionBasedAuthorize("CUS_MNT")]
+        public JsonResult DeleteCustomer(int? Id)
         {
-            var check = unitWork.Customer.Get(x => x.Name.ToLower() == Name.ToLower() && x.PhoneNumber == PhoneNumber).FirstOrDefault();
+            try
+            {
+                var oldcustomer = unitWork.Customer.GetById(Id);
+                if (oldcustomer != null)
+                {
+                    oldcustomer.Status = CustomerStatus.INACTIVE;
+                    unitWork.Customer.Update(oldcustomer);
+                    unitWork.Commit();
+                }
+                return Json(new { success = true, message = "Xoá khách hàng thành công" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public bool CheckExist(string Code)
+        {
+            var check = unitWork.Customer.Get(x => x.Name.ToLower() == Code.ToLower()).FirstOrDefault();
             if (check != null)
                 return false;
             return true;

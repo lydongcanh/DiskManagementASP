@@ -9,7 +9,7 @@ namespace Ehr.Bussiness
     public class UnitWork : IUnitWork
     {
         #region declare repository
-        private EhrDbContext _context;
+        private QLTDDBContext _context;
         private BaseRepository<User> _user;
         private BaseRepository<Role> _role;
         private BaseRepository<Permission> _permission;
@@ -25,7 +25,7 @@ namespace Ehr.Bussiness
         private BaseRepository<RentReceipt> _rentreceipt;
         #endregion
 
-        public UnitWork(EhrDbContext context)
+        public UnitWork(QLTDDBContext context)
         {
             _context = context;
         }

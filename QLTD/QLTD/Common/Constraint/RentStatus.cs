@@ -10,6 +10,10 @@ namespace Ehr.Common.Constraint
     {
         [Display(Name = "Đang thuê")]
         RENTING = 0,
+        [Display(Name = "Chờ thanh toán")]
+        WAITING = 1,
+        [Display(Name = "Thanh toán thiếu")]
+        PENDING = 1,
         [Display(Name = "Đã thanh toán")]
         DONE = 1,
     }

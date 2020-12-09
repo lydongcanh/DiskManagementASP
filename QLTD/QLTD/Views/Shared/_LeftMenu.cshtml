@@ -1,6 +1,6 @@
 ﻿<style type="text/css">
 </style>
-<aside class="main-sidebar elevation-3 sidebar-light-green" style="background-color: #ffffff">
+<aside class="main-sidebar elevation-3 sidebar-light-green" style="background-color: rgb(236, 255, 237)">
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
         <img src="~/Content/img/smalldisk.png" class="brand-image img-circle elevation-3"
@@ -19,7 +19,7 @@
     with font-awesome or any other icon font library -->
                 <li class="nav-item">
                     <a href="/" class="nav-link">
-                        <i class="fas fa-copy nav-icon"></i>
+                        <i class="fas fa-home nav-icon"></i>
                         <p>
                             Trang chủ
                         </p>
@@ -27,6 +27,14 @@
                 </li>
                 @if (User.HavingRight("RENT_DISK"))
                 {
+                    <li class="nav-item">
+                        <a href="~/RentDisk/Rent" class="nav-link">
+                            <i class="fas fa-address-book nav-icon"></i>
+                            <p>
+                                Thuê đĩa
+                            </p>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="~/Customer/Index" class="nav-link">
                             <i class="fas fa-copy nav-icon"></i>

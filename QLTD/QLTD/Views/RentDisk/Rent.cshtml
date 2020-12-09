@@ -2,8 +2,9 @@
 @{
     ViewBag.Title = "Thuê đĩa";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    Ehr.Data.EhrDbContext db = new Ehr.Data.EhrDbContext();
+    Ehr.Data.QLTDDBContext db = new Ehr.Data.QLTDDBContext();
     var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
+    var datenow = DataConverter.DateTime2UI_Lite(DateTime.Now);
 }
 @using System.Linq
 @using Ehr.Common.Constraint
@@ -32,13 +33,99 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-success">
-                <b> Thông tin tiêu đề</b>
+                <b> Thông tin phiếu thuê</b>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form id="form-add-title">
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="hidden" class="form-control" name="Id" id="Id" />
+                            <div class="form-group">
+                                <label>Ngày thuê </label>
+                                <div class="input-group-prepend" title="Nhấn vào icon để xóa">
+                                    <span class="input-group-text" onclick="clearDate('TimeLine')"><i class="far fa-calendar-alt"></i></span>
+                                    <input type="text" name="RentDate" value="@datenow" class="form-control ez-date-isnull-full" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Mã phiếu thuê
+                                </label>
+                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã phiếu thuê" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>
+                                    Số ngày thuê
+                                </label>
+                                <input type="number" class="form-control" name="RentLenght" id="RentLenght" placeholder="Nhập số ngày thuê" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Khách hàng
+                                </label>
+                                <select id="Customer" class="form-control select2-success select2" name="Customer" data-dropdown-css-class="select2-green">
+                                    <option value="-1" selected>- Chọn khách hàng -</option>
+                                    @foreach (var item in ViewBag.Customer)
+                                    {
+                                        <option value="@item.Id">@item.Code - @item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Chi tiết đĩa thuê
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select id="DiskTitle" class="form-control select2-success select2" name="DiskTitle" data-dropdown-css-class="select2-green">
+                                    <option value="-1" selected>- Chọn tiêu đề -</option>
+                                    @foreach (var item in ViewBag.DiskTitles)
+                                    {
+                                        <option value="@item.Id">@item.Code - @item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <select id="DiskId" class="form-control select2-success select2" name="DiskId" data-dropdown-css-class="select2-green">
+                                    <option value="-1" selected>- Chọn đĩa -</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-success" onclick="DiskChoose();"><i class="fa fa-arrow-alt-circle-down"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <!-- /.card-header -->
+                                <div class="card-body table-responsive p-0" style="background-color:#ffffff;max-height:200px;overflow-y: auto;">
+                                    <table class="table table-hover table-head-fixed">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã đĩa</th>
+                                                <th>Tên</th>
+                                                <th>Thể loại</th>
+                                                <th>Giá</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="body-diskchoose"></tbody>
+                                    </table>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
 
                 </div>
                 <div class="card-footer">
@@ -129,8 +216,26 @@
                                                 @dem
                                                 @{dem++;}
                                             </td>
-                                            @{ 
+                                            @{
                                                 var datea = DataConverter.DateTime2UI_Full(i.RentDate);
+                                                var state = i.Status.GetAttribute<DisplayAttribute>().Name;
+                                                var bg = "";
+                                                if (i.Status == RentStatus.RENTING)
+                                                {
+                                                    bg = "bg-warning";
+                                                }
+                                                if (i.Status == RentStatus.WAITING)
+                                                {
+                                                    bg = "bg-success";
+                                                }
+                                                if (i.Status == RentStatus.PENDING)
+                                                {
+                                                    bg = "bg-primary";
+                                                }
+                                                else if (i.Status == RentStatus.DONE)
+                                                {
+                                                    bg = "bg-success";
+                                                }
                                             }
                                             <td>
                                                 @i.Code
@@ -140,6 +245,9 @@
                                             </td>
                                             <td>
                                                 @i.Customer.Name
+                                            </td>
+                                            <td>
+                                                <span class="badge @bg">@state</span>
                                             </td>
                                             <td class="project-actions text-right">
                                                 <button onclick="EditRent(@i.Id)" class="btn btn-success btn-sm">
@@ -176,10 +284,10 @@
     var loaderpath = Url.Action("Content/img/loader.gif", "/", null, Request.Url.Scheme);
 }
 <script>
-    var flag = "/Disk/DiskTitle"
+    var flag = "/RentDisk/Rent"
 </script>
 <script>
-    $(document).ajaxStart(function () {
+$(document).ajaxStart(function () {
         $("#ezloader").css("display", "block");
     });
 
@@ -187,30 +295,35 @@
         $("#ezloader").css("display", "none");
     });
 
+    var lsRentDetail = [];
+
     $("#form-add-title").submit(function (e) {
         e.preventDefault();
         var serializedForm = $(this).serializeArray();
-        var Code = serializedForm[1].value;
-        console.log(serializedForm);
-        if (serializedForm[3].value == "-1") {
-            toastr.warning("Vui lòng chọn loại", "Warning");
-        } if (serializedForm[2].value == "") {
-            toastr.warning("Vui lòng nhập tên tiêu đề", "Warning");
-        } else if (Code !== "") {
+        var Id = $("#Id").val();
+        var Code = $("#Code").val();
+        var RentLenght = $("#RentLenght").val();
+        var RentDate = $("#RentDate").val();
+        var CustomerId = $("#Customer").val();
+        var rent = new Rent(Id, Code, RentLenght, RentDate);
+        if (Code !== "") {
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                data: serializedForm,
-                url: "/Disk/AddDiskTitle",
+                data: {
+                    rent: rent,
+                    customerId: CustomerId,
+                    rents: lsRentDetail
+                },
+                url: "/RentDisk/AddRent",
                 success: function (item) {
                     if (item.success) {
                         toastr.success(item.message);
                         ResetForm();
-
-                        $("#AddTitle").modal('hide');
                         setTimeout(function () {
                             window.location.reload();
                         }, 500);
+                        $("#AddTitle").modal('hide');
                     } else {
                         toastr.warning(item.message);
                     }
@@ -223,33 +336,150 @@
                 }
             });
         } else {
-            toastr.warning("Vui lòng nhập mã tiêu đề !");
+            toastr.warning("Vui lòng nhập mã phiếu thuê !");
         }
     });
 
     function ResetForm() {
-        var id = $('#Id').val('');
+        $('#Id').val('');
+        $('#Customer').val("-1").trigger('change');
+        $('#DiskTitle').val("-1").trigger('change');
+        $('#DiskId').val("-1").trigger('change');
+        $("#body-diskchoose").html('');
         $("#form-add-title")[0].reset();
     }
     $("#AddTitle").on('hide.bs.modal', function () {
         ResetForm();
     });
-    function EditAntimi(id, Code, Name, Price, LateCharge, Description, Status, IdType) {
-        $("#form-add-title")[0].reset();
-        $("#AddTitle").modal('show');
-        var id = $('#Id').val(id);
-        var Code = $('#Code').val(Code);
-        var Name = $('#Name').val(Name);
-        var Price = $('#Price').val(Price);
-        var LateCharge = $('#LateCharge').val(LateCharge);
-        var Description = $('#Description').val(Description);
-        $('#DiskType').val(IdType).trigger('change');
-        if (Status == 'PENDING') {
-            $('#radioStatus0').click();
-        } else {
+    var idtemp = -1;
 
-            $('#radioStatus1').click();
+    $("#DiskTitle").change(function () {
+        var disktitle = $("#DiskTitle").val();
+        $('#DiskId').find('option').not(':first').remove();
+        if (disktitle != "-1" && disktitle != "") {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+                    Id: disktitle,
+                    rents: lsRentDetail
+                },
+                url: "/RentDisk/LoadDiskByTitle",
+                success: function (item) {
+                    if (item != null) {
+                        $("#DiskId").select2({
+                            miniumInputLength: 2,
+                            data: item
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
         }
-        $("#Code").focus();
+    });
+
+    function EditRent(id) {
+        $("#form-add-title")[0].reset();
+        $("#body-diskchoose").html('');
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: id
+            },
+            url: "/RentDisk/GetRent",
+            success: function (item) {
+                if (item.success) {
+                    $('#Id').val(item.Data.Id);
+                    $('#Code').val(item.Data.Code);
+                    $('#RentLenght').val(item.Data.RentLenght);
+                    $('#RentDate').val(item.Data.RentDate);
+                    $('#Customer').val(item.Data.CustomerId).trigger('change');
+                    $("#Code").focus();
+                    for (var i = 0; i < item.RentDetails.length; i++) {
+                        var rentde = item.RentDetails[i];
+                        var rentview = new RentViewModel(rentde.Id, rentde.DiskId, item.DiskCode, item.DiskName, item.TypeName, item.Prices);
+                        lsRentDetail.push(rentview);
+                        var html = GetHtml(rentde);
+                        $("#body-diskchoose").append(html);
+                    }
+                    $("#AddTitle").modal('show');
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Lưu dữ liệu không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
+    }
+    function DiskChoose() {
+        var DiskId = $('#DiskId').val();
+        if (DiskId != "" && DiskId != "-1") {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                data: {
+                    Id: DiskId
+                },
+                url: "/RentDisk/GetDisk",
+                success: function (item) {
+                    var rentview = new RentViewModel(idtemp, DiskId, item.Data.DiskCode, item.Data.DiskName, item.Data.TypeName, item.Data.Prices);
+                    lsRentDetail.push(rentview);
+                    var html = GetHtml(rentview);
+                    $("#body-diskchoose").append(html);
+                    $('#DiskId').val("-1").trigger('change');
+                    $('#DiskTitle').trigger('change');
+                    idtemp--;
+                },
+                error: function (err) {
+                    setTimeout(function () {
+                        toastr.error("Đã có lỗi xảy ra", "Failed");
+                    }, 500);
+                    console.log(err);
+                }
+            });
+        } else {
+            toastr.warning("Vui lòng chọn đĩa", "Note");
+        }
+
+    }
+
+    function RentViewModel(Id, DiskId, DiskCode, DiskName, TypeName, Prices) {
+        this.Id = Id;
+        this.DiskId = DiskId;
+        this.DiskCode = DiskCode;
+        this.DiskName = DiskName;
+        this.TypeName = TypeName;
+        this.Prices = Prices;
+    }
+
+
+    function Rent(Id, Code, RentLenght, RentDate) {
+        this.Id = Id;
+        this.Code = Code;
+        this.RentLenght = RentLenght;
+        this.RentDate = RentDate;
+    }
+
+    function GetHtml(rentdetail) {
+        var html = '';
+        html += '<tr id="tran_' + rentdetail.Id + '">';
+        html += '<td>' + rentdetail.DiskCode + '</td>';
+        html += '<td>' + rentdetail.DiskName + '</td>';
+        html += '<td>' + rentdetail.TypeName + '</td>';
+        html += '<td>' + rentdetail.Prices + '</td>';
+        html += '  <td>  <button type="button" class="btn btn-sm btn-outline-danger" onclick="DeleteRentDetail(' + rentdetail.Id + ')"><i class="fa fa-trash" aria-hidden="true"></i></button></td>';
+        html += '</tr>'
+        return html;
+    }
+
+    function DeleteRentDetail(Id) {
+        $('#tran_' + Id).remove();
     }
 </script>

@@ -9,7 +9,7 @@
 @using Ehr.Bussiness;
 @model IEnumerable<Role>
 @{
-    EhrDbContext db = new EhrDbContext();
+    QLTDDBContext db = new QLTDDBContext();
 
       
 }
@@ -102,7 +102,7 @@
 
 
             </div>
-                <div class="card-footer" style="background-color:white">
+                <div class="card-footer">
                     
                     <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
                     <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>

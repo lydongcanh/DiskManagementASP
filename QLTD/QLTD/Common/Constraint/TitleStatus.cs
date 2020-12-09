@@ -12,5 +12,7 @@ namespace Ehr.Common.Constraint
         PENDING = 0,
         [Display(Name = "Ngưng bán")]
         CLOSED = 1,
+        [Display(Name = "Xoá")]
+        DELETED = 2
     }
 }

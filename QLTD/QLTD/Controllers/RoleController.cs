@@ -96,7 +96,7 @@ namespace Ehr.Controllers
             }
 
             #endregion
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
             #region Phần sắp xếp
             //Lấy dataset rỗng
             IQueryable<Role> roless = null;

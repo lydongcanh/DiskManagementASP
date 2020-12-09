@@ -8,9 +8,9 @@ namespace Ehr.Auth
 {
     public class CustomRole 
     {
-        private readonly EhrDbContext context;
+        private readonly QLTDDBContext context;
 
-        public CustomRole(EhrDbContext context)
+        public CustomRole(QLTDDBContext context)
         {
             this.context = context;
         }

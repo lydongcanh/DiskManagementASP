@@ -117,7 +117,7 @@ namespace Ehr.Controllers
             }
 
             #endregion
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
             #region Phần sắp xếp
             //Lấy dataset rỗng
             IQueryable<User> usr = null;
@@ -289,7 +289,7 @@ namespace Ehr.Controllers
             }
 
             #endregion
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
             #region Phần sắp xếp
             //Lấy dataset rỗng
             IQueryable<User> usr = null;
@@ -605,7 +605,7 @@ namespace Ehr.Controllers
                 return View(updateUser);
             }
             var user = unitWork.User.GetById(updateUser.Id);
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
             var oldObject = (from b in db.Users
                              select new
                              {
@@ -874,7 +874,7 @@ namespace Ehr.Controllers
             }
 
             #endregion
-            Ehr.Data.EhrDbContext db = new Data.EhrDbContext();
+            Ehr.Data.QLTDDBContext db = new Data.QLTDDBContext();
             #region Phần sắp xếp
             //Lấy dataset rỗng
             IQueryable<User> usr = null;

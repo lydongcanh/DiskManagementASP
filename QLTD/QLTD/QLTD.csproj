@@ -277,15 +277,15 @@
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\UnpermissionedController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Data\EhrDbContext.cs" />
+    <Compile Include="Data\QLTDDBContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IUnitWork.cs" />
-    <Compile Include="Migrations\202012081530493_cd.cs" />
-    <Compile Include="Migrations\202012081530493_cd.Designer.cs">
-      <DependentUpon>202012081530493_cd.cs</DependentUpon>
+    <Compile Include="Migrations\202012090309456_cd.cs" />
+    <Compile Include="Migrations\202012090309456_cd.Designer.cs">
+      <DependentUpon>202012090309456_cd.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -306,6 +306,8 @@
     <Compile Include="ViewModels\DataTableAjaxPostViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\RentDetailViewModel.cs" />
+    <Compile Include="ViewModels\RentViewModel.cs" />
     <Compile Include="ViewModels\RoleViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="Views\BaseViewPage.cs" />
@@ -2173,8 +2175,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202012081530493_cd.resx">
-      <DependentUpon>202012081530493_cd.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202012090309456_cd.resx">
+      <DependentUpon>202012090309456_cd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

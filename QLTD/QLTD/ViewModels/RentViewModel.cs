@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Ehr.Models
+namespace Ehr.ViewModels
 {
-    public class Rent
+    public class RentViewModel
     {
         public int Id { get; set; }
         /// <summary>
@@ -20,18 +20,16 @@ namespace Ehr.Models
         /// <summary>
         /// Ngày thuê
         /// </summary>
-        public DateTime RentDate { get; set; }
+        public string RentDate { get; set; }
         /// <summary>
         /// khách hàng
         /// </summary>
-        public virtual Customer Customer { get; set; }
+        public int CustomerId { get; set; }
+
+        public string CustomerName { get; set; }
         /// <summary>
         /// khách hàng
         /// </summary>
         public RentStatus Status { get; set; }
-        /// <summary>
-        /// chi tiết phiếu thuê
-        /// </summary>
-        public virtual ICollection<RentDetail> RentDetails { get; set; }
     }
 }

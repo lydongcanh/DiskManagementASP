@@ -7,26 +7,17 @@ using System.Web;
 
 namespace Ehr.Data
 {
-    public class EhrDbContext : DbContext
+    public class QLTDDBContext : DbContext
     {
-        public EhrDbContext() : base ("DefaultConnection")
+        public QLTDDBContext() : base ("DefaultConnection")
         {
 
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer<EhrDbContext>(null);
-            modelBuilder.Properties<DateTime>().Configure(c => c.HasColumnType("TIMESTAMP"));
-            //modelBuilder.Entity<EProject>()
-            //               .HasMany<User>(s => s.ProjectMembers)
-            //               .WithMany(p => p.Projects)
-            //               .Map(pu =>
-            //               {
-            //                   pu.MapLeftKey("Project_Id");
-            //                   pu.MapRightKey("User_Id");
-            //                   pu.ToTable("EProjectUser");
-            //               });
+            Database.SetInitializer<QLTDDBContext>(null);
+            modelBuilder.Properties<DateTime>().Configure(c => c.HasColumnType("datetime2"));
             base.OnModelCreating(modelBuilder);
         }
 

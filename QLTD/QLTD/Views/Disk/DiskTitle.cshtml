@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Danh sách tiêu đề";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Ehr.Data.QLTDDBContext db = new Ehr.Data.QLTDDBContext();
+    var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
 }
 @using System.Linq
 @using Ehr.Common.Constraint
@@ -193,7 +195,7 @@
                                             STT
                                         </th>
                                         @Html.Raw(ViewBag.GridHeader)
-                                        <th style="width: 15%">
+                                        <th style="min-width:80px">
                                         </th>
                                     </tr>
                                 </thead>
@@ -244,6 +246,14 @@
                                                     <i class="fas fa-pencil-alt">
                                                     </i><span>Sửa</span>
                                                 </button>
+                                                &nbsp;&nbsp;
+                                                @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
+                                                {
+                                                    <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash">
+                                                        </i><span>Xoá</span>
+                                                    </button>
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -349,5 +359,33 @@
             $('#radioStatus1').click();
         }
         $("#Code").focus();
+    }
+
+
+    function DeleteRent(id) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: id,
+            },
+            url: "/Disk/DeleteDiskTitle",
+            success: function (item) {
+                if (item.success) {
+                    toastr.success(item.message);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Xoá dữ liệu không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
     }
 </script>

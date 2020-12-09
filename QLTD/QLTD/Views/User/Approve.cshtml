@@ -14,7 +14,7 @@
 @using Ehr.Bussiness;
 
 @{
-    EhrDbContext db = new EhrDbContext();
+    QLTDDBContext db = new QLTDDBContext();
 }
 <style>
     .select2-container .select2-selection--single {
@@ -177,7 +177,7 @@
                 <br />
             </div>
             <!-- /.card-body -->
-            <div class="card-footer" style="background-color:white">
+            <div class="card-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Huỷ</button>
                 <button type="submit" class="btn bg-teal float-right" id="submitApprove">Đồng ý</button>
             </div>

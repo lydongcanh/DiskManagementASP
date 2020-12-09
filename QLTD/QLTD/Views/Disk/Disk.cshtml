@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Danh sách địa";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Ehr.Data.QLTDDBContext db = new Ehr.Data.QLTDDBContext();
+    var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
 }
 @using System.Linq
 @using Ehr.Common.Constraint
@@ -87,7 +89,7 @@
                                                     STT
                                                 </th>
                                                 @Html.Raw(ViewBag.GridHeader)
-                                                <th style="width: 15%">
+                                                <th style="min-width:80px">
                                                 </th>
                                             </tr>
                                         </thead>
@@ -111,11 +113,11 @@
                                                         }
                                                         else if (i.Status == DiskStatus.HOLDING)
                                                         {
-                                                            bg = "bg-yellow";
+                                                            bg = "bg-primary";
                                                         }
                                                         else
                                                         {
-                                                            bg = "bg-red";
+                                                            bg = "bg-yellow";
                                                         }
                                                     }
                                                     <td>
@@ -133,6 +135,14 @@
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
+                                                        &nbsp;&nbsp;
+                                                        @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
+                                                        {
+                                                            <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-trash">
+                                                                </i><span>Xoá</span>
+                                                            </button>
+                                                        }
                                                     </td>
                                                 </tr>
                                             }
@@ -169,7 +179,7 @@
                                     }
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="display:none">
                                 <label>
                                     Trạng thái
                                 </label>
@@ -194,7 +204,7 @@
                             </div>
 
                         </div>
-                        <div class="card-footer" style="background-color:white">
+                        <div class="card-footer">
                             <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
                             <button type="button" class="btn  btn-warning" onclick="ResetForm()">Hủy thao tác</button>
                         </div>
@@ -296,5 +306,31 @@
             $('#radioStatus2').click();
         }
         $("#Code").focus();
+    }
+    function DeleteRent(id) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: id,
+            },
+            url: "/Disk/DeleteDisk",
+            success: function (item) {
+                if (item.success) {
+                    toastr.success(item.message);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Xoá dữ liệu không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
     }
 </script>
