@@ -7,12 +7,12 @@ namespace Ehr.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Rents", "RentLenght", c => c.Int(nullable: false));
+            AddColumn("dbo.DiskTitles", "Image", c => c.String());
         }
         
         public override void Down()
         {
-            DropColumn("dbo.Rents", "RentLenght");
+            DropColumn("dbo.DiskTitles", "Image");
         }
     }
 }

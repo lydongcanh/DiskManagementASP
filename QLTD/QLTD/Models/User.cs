@@ -29,26 +29,5 @@ namespace Ehr.Models
         [NotMapped]
         public bool IsRemember { get; set; }
         public virtual ICollection<Role> Roles { get; set; }
-		/// <summary>
-		/// Người dùng có thuộc cục thú y hay không
-		/// </summary>
-		public bool IsCentral
-		{
-			get;set;
-		}
-		/// <summary>
-		/// người dùng thuộc chi cục nào
-		/// </summary>
-		public int Province
-		{
-			get;set;
-		}
-		/// <summary>
-		/// Người dùng loại nào
-		/// </summary>
-		public UserType UserType
-		{
-			get;set;
-		}
     }
 }

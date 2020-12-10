@@ -31,6 +31,10 @@ namespace Ehr.Models
         /// </summary>
         public string Description { get; set; }
         /// <summary>
+        /// mô tả
+        /// </summary>
+        public string Image { get; set; }
+        /// <summary>
         /// Trạng thái
         /// </summary>
         public TitleStatus Status { get; set; }

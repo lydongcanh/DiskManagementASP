@@ -105,7 +105,7 @@
                                                     </td>
 
                                                     <td class="project-actions text-right">
-                                                        <button onclick="EditAntimi(@i.Id,'@i.Code','@i.Name','@i.PhoneNumber','@i.Address')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi('@i.Id','@i.Code','@i.Name','@i.PhoneNumber','@i.Address')" class="btn btn-success btn-sm">
                                                             <i class="fas fa-pencil-alt">
                                                             </i><span>Sửa</span>
                                                         </button>
@@ -243,19 +243,20 @@
     });
 
     function ResetForm() {
-        var id = $('#Id').val('');
-        var name = $('#Code').val('');
-        var name = $('#Name').val('');
-        var name = $('#PhoneNumber').val('');
-        var name = $('#Address').val('');
+        $('#Id').val('');
+        $('#Code').val('');
+        $('#Name').val('');
+        $('#PhoneNumber').val('');
+        $('#Address').val('');
     }
 
-    function EditAntimi(id,code ,name, PhoneNumber, Address) {
-        var id = $('#Id').val(id);
-        var name = $('#Code').val(code);
-        var name = $('#Name').val(name);
-        var PhoneNumber = $('#PhoneNumber').val(PhoneNumber);
-        var Address = $('#Address').val(Address);
+    function EditAntimi(id, code, name, PhoneNumber, Address) {
+        console.log(name);
+        $('#Id').val(id);
+        $('#Code').val(code);
+        $('#Name').val(name);
+        $('#PhoneNumber').val(PhoneNumber);
+        $('#Address').val(Address);
         $("#Name").focus();
     }
 

@@ -247,7 +247,7 @@ namespace Ehr.Controllers
             var lsrentid = new List<int>();
             if(rents!= null)
             {
-                lsrentid = rents.Select(x => x.Id).ToList();
+                lsrentid = rents.Select(x => x.DiskId).ToList();
             }
             if (Id == null)
             {

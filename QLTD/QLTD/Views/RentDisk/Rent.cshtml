@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     Ehr.Data.QLTDDBContext db = new Ehr.Data.QLTDDBContext();
     var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
-    var datenow = DataConverter.DateTime2UI_Lite(DateTime.Now);
+    var datenow = DataConverter.DateTime2UI_Full(DateTime.Now);
 }
 @using System.Linq
 @using Ehr.Common.Constraint
@@ -46,8 +46,7 @@
                             <div class="form-group">
                                 <label>Ngày thuê </label>
                                 <div class="input-group-prepend" title="Nhấn vào icon để xóa">
-                                    <span class="input-group-text" onclick="clearDate('TimeLine')"><i class="far fa-calendar-alt"></i></span>
-                                    <input type="text" name="RentDate" value="@datenow" class="form-control ez-date-isnull-full" readonly>
+                                    <input type="text" id="RentDate" name="RentDate" value="@datenow" class="form-control ez-date-isnull-full">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -300,12 +299,17 @@ $(document).ajaxStart(function () {
     $("#form-add-title").submit(function (e) {
         e.preventDefault();
         var serializedForm = $(this).serializeArray();
+        console.log(serializedForm);
         var Id = $("#Id").val();
         var Code = $("#Code").val();
         var RentLenght = $("#RentLenght").val();
-        var RentDate = $("#RentDate").val();
+        var RentDate = serializedForm[1].value;
+        var date = RentDate.substring(0, 2);
+        var month = RentDate.substring(3, 5);
+        var year = RentDate.substring(6, 10);
+        var newrentdate = month + "/" + date + "/" + year
         var CustomerId = $("#Customer").val();
-        var rent = new Rent(Id, Code, RentLenght, RentDate);
+        var rent = new Rent(Id, Code, RentLenght, newrentdate);
         if (Code !== "") {
             $.ajax({
                 type: "POST",
@@ -412,7 +416,7 @@ $(document).ajaxStart(function () {
             },
             error: function (err) {
                 setTimeout(function () {
-                    toastr.error("Lưu dữ liệu không thành công", "Failed");
+                    toastr.error("Không tìm thấy phiếu thuê !", "Failed");
                 }, 500);
                 console.log(err);
             }
