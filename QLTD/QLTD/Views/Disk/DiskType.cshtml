@@ -96,9 +96,9 @@
                                                         @i.Name
                                                     </td>
                                                     <td class="project-actions text-right">
-                                                        <button onclick="EditAntimi(@i.Id,'@i.Code','@i.Name')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi(@i.Id,'@i.Name')" class="btn btn-success btn-sm">
                                                             <i class="fas fa-pencil-alt">
-                                                            </i><span>Sửa</span>
+                                                            </i> <span>Sửa</span>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -118,7 +118,7 @@
                     <form id="form-add-type">
                         <div class="card-body">
                             <input type="hidden" name="Id" id="Id" />
-                            <div class="form-group">
+                            <div class="form-group" style="display:none">
                                 <label>
                                     Mã loại
                                 </label>
@@ -173,7 +173,6 @@
     $("#form-add-type").submit(function (e) {
         e.preventDefault();
         var id = $('#Id').val();
-        var Code = $('#Code').val();
         var name = $('#Name').val();
         if (Code !== "") {
             $.ajax({
@@ -181,7 +180,6 @@
                 dataType: "json",
                 data: {
                     Id: id,
-                    Code: Code,
                     Name: name,
                 },
                 url: "/Disk/AddDiskType",
@@ -213,10 +211,9 @@
         $("#form-add-type")[0].reset();
     }
 
-    function EditAntimi(id, Code, Name) {
+    function EditAntimi(id, Name) {
         var id = $('#Id').val(id);
-        var Code = $('#Code').val(Code);
         var Name = $('#Name').val(Name);
-        $("#Code").focus();
+        $("#Name").focus();
     }
 </script>

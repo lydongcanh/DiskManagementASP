@@ -179,8 +179,8 @@ namespace Ehr.Controllers
                                      Value = ((int)s).ToString(),
                                      Text = s.GetAttribute<DisplayAttribute>().Name
                                  };
-            ViewBag.Customer = unitWork.Customer.Get();
-            ViewBag.DiskTitles = unitWork.DiskTitle.Get();
+            ViewBag.Customer = unitWork.Customer.Get(x => x.Status != CustomerStatus.INACTIVE);
+            ViewBag.DiskTitles = unitWork.DiskTitle.Get(x => x.Status == TitleStatus.PENDING);
             //Hiển thị trong khoảng chọn
             if (Rents != null)
                 if (ezpage.PageModel.StartItem >= 1 && datasetSize > 0)
@@ -258,7 +258,7 @@ namespace Ehr.Controllers
                 };
                 return Json(json, JsonRequestBehavior.AllowGet);
             }
-
+            var disktitle = unitWork.DiskTitle.GetById(Id);
             var disk = unitWork.Disk.Get(x => x.DiskTitle.Id == Id).Where(x => !lsrentid.Contains(x.Id) && x.Status == DiskStatus.WAITING).Select(
             c => new
             {
@@ -266,7 +266,7 @@ namespace Ehr.Controllers
                 text = c.Code
             }
             ).Distinct().OrderBy(c => c.text).ToList();
-            return Json(disk, JsonRequestBehavior.AllowGet);
+            return Json(new { Disk = disk, Image = disktitle.Image }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetDisk(int? Id)
@@ -309,7 +309,6 @@ namespace Ehr.Controllers
                 if (rent.Id > 0)
                 {
                     var oldrent = unitWork.Rent.GetById(rent.Id);
-                    oldrent.Code = rent.Code;
                     oldrent.RentLenght = rent.RentLenght;
                     oldrent.RentDate = rent.RentDate;
                     oldrent.Customer = customer;
@@ -318,6 +317,9 @@ namespace Ehr.Controllers
                 }
                 else
                 {
+                    var lastRent = unitWork.Rent.Get().LastOrDefault();
+                    var Code = lastRent.Id + 1;
+                    rent.Code = "PT-00"+ Code.ToString();
                     rent.Customer = customer;
                     unitWork.Rent.Insert(rent);
                     unitWork.Commit();

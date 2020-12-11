@@ -42,20 +42,38 @@
 
                     <div class="row">
                         <div class="col-md-6">
-
                             <input type="hidden" name="Id" id="Id" />
-                            <div class="form-group">
-                                <label>
-                                    Mã tiêu đề
-                                </label>
-                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã tiêu đề" />
-                            </div>
                             <div class="form-group">
                                 <label>
                                     Tên tiêu đề
                                 </label>
                                 <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên tiêu đề" />
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group" style="display:none">
+                                        <label>
+                                            Mã tiêu đề
+                                        </label>
+                                        <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã tiêu đề" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            Đơn giá
+                                        </label>
+                                        <input type="number" class="form-control" name="Price" id="Price" placeholder="Nhập đơn giá" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            Phí trễ
+                                        </label>
+                                        <input type="number" class="form-control" name="LateCharge" id="LateCharge" placeholder="Nhập đơn giá" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label>
                                     Loại
@@ -68,7 +86,12 @@
                                     }
                                 </select>
                             </div>
-
+                            <div class="form-group">
+                                <label>
+                                    Mô tả
+                                </label>
+                                <textarea class="form-control" rows="3" name="Description" id="Description" placeholder="nhập thông tin"></textarea>
+                            </div>
                             <div class="form-group">
                                 <label>
                                     Trạng thái
@@ -96,28 +119,29 @@
                                     }
                                 </div>
                             </div>
+
+
                         </div>
                         <div class="col-md-6">
-
                             <div class="form-group">
-                                <label>
-                                    Đơn giá
-                                </label>
-                                <input type="number" class="form-control" name="Price" id="Price" placeholder="Nhập đơn giá" />
+                                <label for="Image">15. Hình ảnh tiều đề</label><br />
+                                <div class="input-group mb-3">
+                                    <input type="file" class="custom-file-input" id="Image" name="Image" onchange="img2Base64(this,'Image_dis','Image_hidden')">
+                                    <label class="custom-file-label" for="Image">Tải ảnh lên</label>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label>
-                                    Phí trễ
-                                </label>
-                                <input type="number" class="form-control" name="LateCharge" id="LateCharge" placeholder="Nhập đơn giá" />
+                                <div class="row">
+                                    <div class="col-sm-11">
+                                        <div>
+                                            <div>
+                                                <img src="/Images/cd-303303_1280.png" id="Image_dis" style="width:350px;height:350px" />
+                                                <input type="hidden" id="Image_hidden" name="Image_img" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>
-                                    Mô tả
-                                </label>
-                                <textarea class="form-control" rows="3" name="Description" id="Description" placeholder="nhập thông tin"></textarea>
-                            </div>
-
                         </div>
 
                     </div>
@@ -205,57 +229,62 @@
                                     }
                                     @foreach (var i in Model)
                                     {
-                                        <tr>
-                                            <td>
-                                                @dem
-                                                @{dem++;}
-                                            </td>
-                                            @{
-                                                var state = i.Status.GetAttribute<DisplayAttribute>().Name;
-                                                var bg = "";
-                                                if (i.Status == TitleStatus.PENDING)
-                                                {
-                                                    bg = "bg-success";
-                                                }
-                                                else if (i.Status == TitleStatus.CLOSED)
-                                                {
-                                                    bg = "bg-red";
-                                                }
+                                    <tr>
+                                        <td>
+                                            @dem
+                                            @{dem++;}
+                                        </td>
+                                        @{
+                                            var state = i.Status.GetAttribute<DisplayAttribute>().Name;
+                                            var bg = "";
+                                            if (i.Status == TitleStatus.PENDING)
+                                            {
+                                                bg = "bg-success";
                                             }
-                                            <td>
-                                                @i.Code
-                                            </td>
-                                            <td>
-                                                @i.Name
-                                            </td>
-                                            <td>
-                                                @i.DiskType.Name
-                                            </td>
-                                            <td>
-                                                @i.Price
-                                            </td>
-                                            <td>
-                                                @i.LateCharge
-                                            </td>
-                                            <td>
-                                                <span class="badge @bg">@state</span>
-                                            </td>
+                                            else if (i.Status == TitleStatus.CLOSED)
+                                            {
+                                                bg = "bg-red";
+                                            }
+                                        }
+                                        <td style="width:100px">
+                                            <a>
+                                                <img src="@i.Image" width="100px" />
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @i.Code
+                                        </td>
+                                        <td>
+                                            @i.Name
+                                        </td>
+                                        <td>
+                                            @i.DiskType.Name
+                                        </td>
+                                        <td>
+                                            @i.Price
+                                        </td>
+                                        <td>
+                                            @i.LateCharge
+                                        </td>
+                                        <td>
+                                            <span class="badge @bg">@state</span>
+                                        </td>
 
-                                            <td class="project-actions text-right">
-                                                <button onclick="EditAntimi(@i.Id,'@i.Code','@i.Name','@i.Price','@i.LateCharge','@i.Description','@i.Status','@i.DiskType.Id')" class="btn btn-success btn-sm">
-                                                    <i class="fas fa-pencil-alt">
-                                                    </i><span>Sửa</span>
+                                        <td class="project-actions text-right">
+                                            <button onclick="EditAntimi(@i.Id,'@i.Name','@i.Price','@i.LateCharge','@i.Description','@i.Status','@i.DiskType.Id','@i.Image')" class="btn btn-success btn-sm">
+                                                <i class="fas fa-pencil-alt">
+                                                </i><span>Sửa</span>
+                                            </button>
+                                            &nbsp;&nbsp;
+                                            @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
+                                            {
+                                                <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash">
+                                                    </i><span>Xoá</span>
                                                 </button>
-                                                &nbsp;&nbsp;
-                                                @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
-                                                {
-                                                    <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash">
-                                                        </i><span>Xoá</span>
-                                                    </button>
-                                                }
-                                            </td>
-                                        </tr>
+                                            }
+                                        </td>
+                                    </tr>
                                     }
                                 </tbody>
                             </table>
@@ -298,13 +327,11 @@
     $("#form-add-title").submit(function (e) {
         e.preventDefault();
         var serializedForm = $(this).serializeArray();
-        var Code = serializedForm[1].value;
+        var Name = serializedForm[1].value;
         console.log(serializedForm);
-        if (serializedForm[3].value == "-1") {
+        if (serializedForm[5].value == "-1") {
             toastr.warning("Vui lòng chọn loại", "Warning");
-        } if (serializedForm[2].value == "") {
-            toastr.warning("Vui lòng nhập tên tiêu đề", "Warning");
-        } else if (Code !== "") {
+        } else if (Name !== "") {
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -331,26 +358,27 @@
                 }
             });
         } else {
-            toastr.warning("Vui lòng nhập mã tiêu đề !");
+            toastr.warning("Vui lòng nhập tên tiêu đề !");
         }
     });
 
     function ResetForm() {
         var id = $('#Id').val('');
         $("#form-add-title")[0].reset();
+        $("#Image_dis").attr("src", "/Images/cd-303303_1280.png");
     }
     $("#AddTitle").on('hide.bs.modal', function () {
         ResetForm();
     });
-    function EditAntimi(id, Code, Name, Price, LateCharge, Description, Status, IdType) {
+    function EditAntimi(id, Name, Price, LateCharge, Description, Status, IdType,Image) {
         $("#form-add-title")[0].reset();
         $("#AddTitle").modal('show');
         var id = $('#Id').val(id);
-        var Code = $('#Code').val(Code);
         var Name = $('#Name').val(Name);
         var Price = $('#Price').val(Price);
         var LateCharge = $('#LateCharge').val(LateCharge);
         var Description = $('#Description').val(Description);
+        $("#Image_dis").attr("src", Image);
         $('#DiskType').val(IdType).trigger('change');
         if (Status == 'PENDING') {
             $('#radioStatus0').click();

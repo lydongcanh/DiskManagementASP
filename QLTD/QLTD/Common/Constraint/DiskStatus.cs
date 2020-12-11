@@ -8,7 +8,7 @@ namespace Ehr.Common.Constraint
 {
     public enum DiskStatus
     {
-        [Display(Name = "Chờ thuê")]
+        [Display(Name = "Chưa thuê")]
         WAITING = 0,
         [Display(Name = "Đang thuê")]
         RENTING = 1,

@@ -181,19 +181,16 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("CUS_MNT")]
-        public JsonResult AddCustomer(int? Id,string Code ,string Name,string PhoneNumber,string Address)
+        public JsonResult AddCustomer(int? Id ,string Name,string PhoneNumber,string Address)
         {
             try
             {
-                var checkex = CheckExist(Code);
-                if (checkex == false)
-                {
-                    return Json(new { success = false, message = "Mã khách hàng đã tồn tại !" }, JsonRequestBehavior.AllowGet);
-                }
                 if (Id == null)
                 {
+                    var lastCus = unitWork.Customer.Get().LastOrDefault();
+                    var Code = lastCus.Id + 1;
                     var customer = new Customer();
-                    customer.Code = Code;
+                    customer.Code = "KH-00" + Code.ToString() ;
                     customer.Name = Name;
                     customer.PhoneNumber = PhoneNumber;
                     customer.Address = Address;
@@ -205,7 +202,6 @@ namespace Ehr.Controllers
                     var oldcustomer = unitWork.Customer.GetById(Id);
                     if (oldcustomer != null)
                     {
-                        oldcustomer.Code = Code;
                         oldcustomer.Name = Name;
                         oldcustomer.PhoneNumber = PhoneNumber;
                         oldcustomer.Address = Address;

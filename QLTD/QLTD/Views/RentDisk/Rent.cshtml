@@ -49,19 +49,11 @@
                                     <input type="text" id="RentDate" name="RentDate" value="@datenow" class="form-control ez-date-isnull-full">
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="display:none">
                                 <label>
                                     Mã phiếu thuê
                                 </label>
                                 <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã phiếu thuê" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    Số ngày thuê
-                                </label>
-                                <input type="number" class="form-control" name="RentLenght" id="RentLenght" placeholder="Nhập số ngày thuê" />
                             </div>
                             <div class="form-group">
                                 <label>
@@ -75,14 +67,16 @@
                                     }
                                 </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            Chi tiết đĩa thuê
-                        </label>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="form-group">
+                                <label>
+                                    Số ngày thuê
+                                </label>
+                                <input type="number" class="form-control" name="RentLenght" id="RentLenght" placeholder="Nhập số ngày thuê" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Tên tiêu đề
+                                </label>
                                 <select id="DiskTitle" class="form-control select2-success select2" name="DiskTitle" data-dropdown-css-class="select2-green">
                                     <option value="-1" selected>- Chọn tiêu đề -</option>
                                     @foreach (var item in ViewBag.DiskTitles)
@@ -91,15 +85,35 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-md-5">
+                            <div class="form-group">
+                                <label>
+                                    Mã đĩa
+                                </label>
                                 <select id="DiskId" class="form-control select2-success select2" name="DiskId" data-dropdown-css-class="select2-green">
                                     <option value="-1" selected>- Chọn đĩa -</option>
                                 </select>
                             </div>
-                            <div class="col-md-1">
-                                <button type="button" class="btn btn-success" onclick="DiskChoose();"><i class="fa fa-arrow-alt-circle-down"></i> </button>
-                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-11">
+                                        <div>
+                                            <div>
+                                                <img src="/Images/cd-303303_1280.png" id="Image_dis" style="width:350px;height:350px" />
+                                                <input type="hidden" id="Image_hidden" name="Image_img" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success" style="width:350px" onclick="DiskChoose();"><i class="fa fa-arrow-alt-circle-down"> Chọn đĩa</i> </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Chi tiết đĩa thuê
+                        </label>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -128,7 +142,7 @@
 
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn bg-success float-right">Lưu dữ liệu</button>
+                    <button type="submit" class="btn bg-success float-right">Lưu phiếu thuê</button>
                     <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close">Hủy thao tác</button>
                 </div>
             </form>
@@ -301,7 +315,6 @@ $(document).ajaxStart(function () {
         var serializedForm = $(this).serializeArray();
         console.log(serializedForm);
         var Id = $("#Id").val();
-        var Code = $("#Code").val();
         var RentLenght = $("#RentLenght").val();
         var RentDate = serializedForm[1].value;
         var date = RentDate.substring(0, 2);
@@ -309,8 +322,15 @@ $(document).ajaxStart(function () {
         var year = RentDate.substring(6, 10);
         var newrentdate = month + "/" + date + "/" + year
         var CustomerId = $("#Customer").val();
-        var rent = new Rent(Id, Code, RentLenght, newrentdate);
-        if (Code !== "") {
+        console.log(CustomerId);
+        var rent = new Rent(Id, "", RentLenght, newrentdate);
+        if (CustomerId == "" || CustomerId == "-1") {
+            toastr.warning("Vui lòng chọn khách hàng !", "Warning");
+        } else if (lsRentDetail.length == 0) {
+            toastr.warning("Vui lòng chọn đĩa cần thuê !", "Warning");
+        } else if (RentLenght == "") {
+            toastr.warning("Vui lòng nhập số ngày thuê !", "Warning");
+        } else {
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -339,8 +359,6 @@ $(document).ajaxStart(function () {
                     console.log(err);
                 }
             });
-        } else {
-            toastr.warning("Vui lòng nhập mã phiếu thuê !");
         }
     });
 
@@ -370,11 +388,16 @@ $(document).ajaxStart(function () {
                 },
                 url: "/RentDisk/LoadDiskByTitle",
                 success: function (item) {
-                    if (item != null) {
+                    console.log(item.Disk);
+                    console.log(item.Image);
+                    if (item.Disk != null) {
                         $("#DiskId").select2({
                             miniumInputLength: 2,
-                            data: item
+                            data: item.Disk
                         });
+                    }
+                    if (item.Image != null) {
+                        $("#Image_dis").attr("src", item.Image);
                     }
                 },
                 error: function (err) {
@@ -385,6 +408,7 @@ $(document).ajaxStart(function () {
     });
 
     function EditRent(id) {
+        lsRentDetail = [];
         $("#form-add-title")[0].reset();
         $("#body-diskchoose").html('');
         $.ajax({
@@ -397,14 +421,13 @@ $(document).ajaxStart(function () {
             success: function (item) {
                 if (item.success) {
                     $('#Id').val(item.Data.Id);
-                    $('#Code').val(item.Data.Code);
                     $('#RentLenght').val(item.Data.RentLenght);
                     $('#RentDate').val(item.Data.RentDate);
                     $('#Customer').val(item.Data.CustomerId).trigger('change');
                     $("#Code").focus();
                     for (var i = 0; i < item.RentDetails.length; i++) {
                         var rentde = item.RentDetails[i];
-                        var rentview = new RentViewModel(rentde.Id, rentde.DiskId, item.DiskCode, item.DiskName, item.TypeName, item.Prices);
+                        var rentview = new RentViewModel(rentde.Id, rentde.DiskId, rentde.DiskCode, rentde.DiskName, rentde.TypeName, rentde.Prices);
                         lsRentDetail.push(rentview);
                         var html = GetHtml(rentde);
                         $("#body-diskchoose").append(html);

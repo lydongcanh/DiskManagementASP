@@ -162,7 +162,8 @@ namespace Ehr.Controllers
                           .Cast<DiskStatus>()
                           .ToList();
             ViewBag.ListStatus = from s in enumstatus
-                               select new SelectListItem
+                                 where s != DiskStatus.DELETED
+                                 select new SelectListItem
                                {
                                    Value = ((int)s).ToString(),
                                    Text = s.GetAttribute<DisplayAttribute>().Name
@@ -184,24 +185,21 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("DISK_MNT")]
-        public JsonResult AddDisk(int? Id, string Code, int IdTitle, DiskStatus status)
+        public JsonResult AddDisk(int? Id, int IdTitle, DiskStatus status)
         {
             try
             {
-                var checkex = CheckExist(Code);
                 var Title = unitWork.DiskTitle.GetById(IdTitle);
                 if (Title == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy tựa đề !" }, JsonRequestBehavior.AllowGet);
                 }
-                //if (checkex == false)
-                //{
-                //    return Json(new { success = false, message = "Trùng mã đĩa !" }, JsonRequestBehavior.AllowGet);
-                //}
                 if (Id == null)
                 {
+                    var lastdisk = unitWork.Disk.Get().LastOrDefault();
+                    var Code = lastdisk.Id + 1;
                     var disk = new Disk();
-                    disk.Code = Code;
+                    disk.Code = "D-00" + Code.ToString(); ;
                     disk.DiskTitle = Title;
                     disk.Status = status;
                     unitWork.Disk.Insert(disk);
@@ -211,7 +209,6 @@ namespace Ehr.Controllers
                     var oldisk = unitWork.Disk.GetById(Id);
                     if (oldisk != null)
                     {
-                        oldisk.Code = Code;
                         oldisk.DiskTitle = Title;
                         oldisk.Status = status;
                         unitWork.Disk.Update(oldisk);
@@ -295,29 +292,33 @@ namespace Ehr.Controllers
             var properties = typeof(DiskTitle).GetProperties();
             foreach (var item in properties)
             {
+                if (item.Name.Equals("Image"))
+                {
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Hình ảnh", Order = 2, AllowSorting = true });
+                }
                 if (item.Name.Equals("Code"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Mã tiêu đề", Order = 2, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Mã tiêu đề", Order = 3, AllowSorting = true });
                 }
                 if (item.Name.Equals("Name"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Tên tiêu đề", Order = 3, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Tên tiêu đề", Order = 4, AllowSorting = true });
                 }
                 if (item.Name.Equals("DiskType"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Loại", Order = 4, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Loại", Order = 5, AllowSorting = true });
                 }
                 if (item.Name.Equals("Price"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Giá", Order = 5, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Giá", Order = 6, AllowSorting = true });
                 }
                 if (item.Name.Equals("LateCharge"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Phí trễ", Order = 6, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Phí trễ", Order = 7, AllowSorting = true });
                 }
                 if (item.Name.Equals("Status"))
                 {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Trạng thái", Order = 7, AllowSorting = true });
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Trạng thái", Order = 8, AllowSorting = true });
                 }
             }
             //sắp xếp lại các cột theo thứ tự
@@ -429,6 +430,7 @@ namespace Ehr.Controllers
                           .Cast<TitleStatus>()
                           .ToList();
             ViewBag.ListStatus = from s in enumstatus
+                                 where s != TitleStatus.DELETED
                                  select new SelectListItem
                                  {
                                      Value = ((int)s).ToString(),
@@ -456,28 +458,27 @@ namespace Ehr.Controllers
             try
             {
                 var diskid = int.Parse(Request.Form.Get("DiskType"));
-                var checkex = CheckExistTitle(diskTitle.Code);
                 var Type = unitWork.DiskType.GetById(diskid);
                 if (Type == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy loại !" }, JsonRequestBehavior.AllowGet);
                 }
-                //if (checkex == false)
-                //{
-                //    return Json(new { success = false, message = "Trùng mã tiêu đề !" }, JsonRequestBehavior.AllowGet);
-                //}
                 if (diskTitle.Id > 0)
                 {
                     var oldisktitle = unitWork.DiskTitle.GetById(diskTitle.Id);
                     if (oldisktitle != null)
                     {
-                        oldisktitle.Code = diskTitle.Code;
                         oldisktitle.Name = diskTitle.Name;
                         oldisktitle.Price = diskTitle.Price;
                         oldisktitle.LateCharge = diskTitle.LateCharge;
                         oldisktitle.Description = diskTitle.Description;
                         oldisktitle.Status = diskTitle.Status;
                         oldisktitle.DiskType = Type;
+                        if (Request.Form.Get("Image_img").ToString().Length > 0)
+                        {
+                            oldisktitle.Image = Request.Form.Get("Image_img");
+                        }
+
                         unitWork.DiskTitle.Update(oldisktitle);
                     }
                     else
@@ -487,20 +488,26 @@ namespace Ehr.Controllers
                 }
                 else
                 {
+                    var lastdisk = unitWork.DiskTitle.Get().LastOrDefault();
+                    var Code = lastdisk.Id + 1;
                     var disktitle = new DiskTitle();
-                    disktitle.Code = diskTitle.Code;
                     disktitle.Name = diskTitle.Name;
                     disktitle.Price = diskTitle.Price;
                     disktitle.LateCharge = diskTitle.LateCharge;
                     disktitle.Description = diskTitle.Description;
                     disktitle.Status = diskTitle.Status;
                     disktitle.DiskType = Type;
+                    disktitle.Code = "TD-00" + Code.ToString();
+                    if (Request.Form.Get("Image_img").ToString().Length > 0)
+                    {
+                        disktitle.Image = Request.Form.Get("Image_img");
+                    }
                     unitWork.DiskTitle.Insert(disktitle);
                 }
                 unitWork.Commit();
                 return Json(new { success = true, message = "Lưu dữ liệu thành công" }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
             }
@@ -682,19 +689,16 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("DISK_MNT")]
-        public JsonResult AddDiskType(int? Id, string Code, string Name)
+        public JsonResult AddDiskType(int? Id, string Name)
         {
             try
             {
-                var checkex = CheckExistTitle(Code);
-                //if (checkex == false)
-                //{
-                //    return Json(new { success = false, message = "Trùng mã tiêu đề !" }, JsonRequestBehavior.AllowGet);
-                //}
                 if (Id == null)
                 {
+                    var lastdisk = unitWork.DiskType.Get().LastOrDefault();
+                    var Code = lastdisk.Id + 1;
                     var disktype = new DiskType();
-                    disktype.Code = Code;
+                    disktype.Code = "L-00" + Code.ToString();
                     disktype.Name = Name;
                     unitWork.DiskType.Insert(disktype);
                 }
@@ -703,7 +707,6 @@ namespace Ehr.Controllers
                     var oldtype = unitWork.DiskType.GetById(Id);
                     if (oldtype != null)
                     {
-                        oldtype.Code = Code;
                         oldtype.Name = Name;
                         unitWork.DiskType.Update(oldtype);
                     }
