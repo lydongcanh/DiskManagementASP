@@ -1,29 +1,7 @@
-# README #
+#khi checkout về mn nhớ sửa file Web.config lại nhé 
 
-This README would normally document whatever steps are necessary to get your application up and running.
+vô sqlserver tạo Database <connectionStrings> <add name="DefaultConnection" connectionString="data source=112.78.1.49;initial catalog=TenDatabase;persist security info=True;user id=sa;password=sapassword;multipleactiveresultsets=True;" providerName="System.Data.SqlClient"/> </connectionStrings>
 
-### What is this repository for? ###
+---> sửa ở initial catalog=<YOUR_DATA>, user id =<USER_LOGIN>, pass=<password> nha
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+mở Package manager console chạy lệnh: add-migration DATTEN ( vd: add-migration ky_cd ) update-database
