@@ -16,5 +16,13 @@ namespace Ehr.Models
         /// Tên loại
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// giá
+        /// </summary>
+        public double Price { get; set; }
+        /// <summary>
+        /// Phí trễ hạn
+        /// </summary>
+        public double LateCharge { get; set; }
     }
 }

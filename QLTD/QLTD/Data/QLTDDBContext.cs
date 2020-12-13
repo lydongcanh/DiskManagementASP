@@ -30,9 +30,9 @@ namespace Ehr.Data
         public DbSet<DiskTitle> DiskTitles { get; set; }
         public DbSet<DiskType> DiskTypes { get; set; }
         public DbSet<LateCharge> LateCharges { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<Rent> Rents { get; set; }
-        public DbSet<RentDetail> RentDetails { get; set; }
-        public DbSet<RentReceipt> RentReceipts { get; set; }
+        public DbSet<OrderLateCharge> Orders { get; set; }
+        public DbSet<OrderRent> Rents { get; set; }
+        public DbSet<OrderDetail> RentDetails { get; set; }
+        public DbSet<OrderReceipt> RentReceipts { get; set; }
     }
 }

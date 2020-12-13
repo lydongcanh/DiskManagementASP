@@ -12,7 +12,7 @@
 @using Ehr.Common.UI;
 @using System.ComponentModel.DataAnnotations;
 @using Ehr.Auth;
-@model IEnumerable<Ehr.Models.Rent>
+@model IEnumerable<Ehr.Models.OrderRent>
 <style>
     .select2-container .select2-selection--single {
         height: calc(2.25rem + 2px);
@@ -231,15 +231,12 @@
                                             </td>
                                             @{
                                                 var datea = DataConverter.DateTime2UI_Full(i.RentDate);
+                                                var dateare = DataConverter.DateTime2UI_Full(i.ReceiptDate);
                                                 var state = i.Status.GetAttribute<DisplayAttribute>().Name;
                                                 var bg = "";
                                                 if (i.Status == RentStatus.RENTING)
                                                 {
                                                     bg = "bg-warning";
-                                                }
-                                                if (i.Status == RentStatus.WAITING)
-                                                {
-                                                    bg = "bg-success";
                                                 }
                                                 if (i.Status == RentStatus.PENDING)
                                                 {
@@ -255,6 +252,9 @@
                                             </td>
                                             <td>
                                                 @datea
+                                            </td>
+                                            <td>
+                                                @dateare
                                             </td>
                                             <td>
                                                 @i.Customer.Name

@@ -185,7 +185,7 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("DISK_MNT")]
-        public JsonResult AddDisk(int? Id, int IdTitle, DiskStatus status)
+        public JsonResult AddDisk(int? Id, int IdTitle, int Number, DiskStatus status)
         {
             try
             {
@@ -194,31 +194,22 @@ namespace Ehr.Controllers
                 {
                     return Json(new { success = false, message = "Không tìm thấy tựa đề !" }, JsonRequestBehavior.AllowGet);
                 }
-                if (Id == null)
+                for (int i = 0; i < Number; i++)
                 {
                     var lastdisk = unitWork.Disk.Get().LastOrDefault();
-                    var Code = lastdisk.Id + 1;
+                    var Code = 1;
+                    if (lastdisk != null)
+                    {
+                        Code = lastdisk.Id + 1;
+                    }
                     var disk = new Disk();
                     disk.Code = "D-00" + Code.ToString(); ;
                     disk.DiskTitle = Title;
-                    disk.Status = status;
+                    disk.Status = DiskStatus.WAITING;
                     unitWork.Disk.Insert(disk);
+                    unitWork.Commit();
                 }
-                else
-                {
-                    var oldisk = unitWork.Disk.GetById(Id);
-                    if (oldisk != null)
-                    {
-                        oldisk.DiskTitle = Title;
-                        oldisk.Status = status;
-                        unitWork.Disk.Update(oldisk);
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = "Không tìm thấy đĩa" }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-                unitWork.Commit();
+
                 return Json(new { success = true, message = "Lưu dữ liệu thành công" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception)
@@ -247,6 +238,30 @@ namespace Ehr.Controllers
         }
 
 
+        public JsonResult CancelHold(int? Id)
+        {
+            try
+            {
+                var olddisk = unitWork.Disk.GetById(Id);
+                if (olddisk == null)
+                {
+                    return Json(new { success = true, message = "Không tìm thấy đĩa !" }, JsonRequestBehavior.AllowGet);
+                }
+                olddisk.Status = DiskStatus.WAITING;
+                unitWork.Disk.Update(olddisk);
+                var hold = unitWork.DiskHold.Get(X => X.Disk.Id == olddisk.Id).LastOrDefault();
+                if (hold != null)
+                {
+                    unitWork.DiskHold.Delete(hold);
+                }
+                unitWork.Commit();
+                return Json(new { success = true, message = "Huỷ giữ đĩa thành công" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         public bool CheckExist(string Code)
         {
@@ -308,14 +323,6 @@ namespace Ehr.Controllers
                 {
                     columns.Add(new EZGridColumn() { Name = item.Name, Text = "Loại", Order = 5, AllowSorting = true });
                 }
-                if (item.Name.Equals("Price"))
-                {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Giá", Order = 6, AllowSorting = true });
-                }
-                if (item.Name.Equals("LateCharge"))
-                {
-                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Phí trễ", Order = 7, AllowSorting = true });
-                }
                 if (item.Name.Equals("Status"))
                 {
                     columns.Add(new EZGridColumn() { Name = item.Name, Text = "Trạng thái", Order = 8, AllowSorting = true });
@@ -363,10 +370,6 @@ namespace Ehr.Controllers
                     DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Name descending select c;
                 else if (sortProperty.Equals("DiskType"))
                     DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.DiskType.Name descending select c;
-                else if (sortProperty.Equals("Price"))
-                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Price descending select c;
-                else if (sortProperty.Equals("LateCharge"))
-                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.LateCharge descending select c;
             }
             else
             {
@@ -376,10 +379,6 @@ namespace Ehr.Controllers
                     DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Name ascending select c;
                 else if (sortProperty.Equals("DiskType"))
                     DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.DiskType.Name ascending select c;
-                else if (sortProperty.Equals("Price"))
-                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.Price ascending select c;
-                else if (sortProperty.Equals("LateCharge"))
-                    DiskTitles = from c in db.DiskTitles where c.Status != TitleStatus.DELETED orderby c.LateCharge ascending select c;
             }
             #endregion
 
@@ -388,9 +387,7 @@ namespace Ehr.Controllers
             {
                 DiskTitles = DiskTitles.Where(c => c.Code.ToString().ToLower().Contains(searchString.ToLower()) ||
                 c.Name.ToString().ToLower().Contains(searchString.ToLower()) || 
-                c.DiskType.Name.ToString().ToLower().Contains(searchString.ToLower()) || 
-                c.Price.ToString().ToLower().Contains(searchString.ToLower()) || 
-                c.LateCharge.ToString().ToLower().Contains(searchString.ToLower()
+                c.DiskType.Name.ToString().ToLower().Contains(searchString.ToLower()
                 ));
 
             }
@@ -469,8 +466,6 @@ namespace Ehr.Controllers
                     if (oldisktitle != null)
                     {
                         oldisktitle.Name = diskTitle.Name;
-                        oldisktitle.Price = diskTitle.Price;
-                        oldisktitle.LateCharge = diskTitle.LateCharge;
                         oldisktitle.Description = diskTitle.Description;
                         oldisktitle.Status = diskTitle.Status;
                         oldisktitle.DiskType = Type;
@@ -489,11 +484,13 @@ namespace Ehr.Controllers
                 else
                 {
                     var lastdisk = unitWork.DiskTitle.Get().LastOrDefault();
-                    var Code = lastdisk.Id + 1;
+                    var Code = 1;
+                    if (lastdisk != null)
+                    {
+                        Code = lastdisk.Id + 1;
+                    }
                     var disktitle = new DiskTitle();
                     disktitle.Name = diskTitle.Name;
-                    disktitle.Price = diskTitle.Price;
-                    disktitle.LateCharge = diskTitle.LateCharge;
                     disktitle.Description = diskTitle.Description;
                     disktitle.Status = diskTitle.Status;
                     disktitle.DiskType = Type;
@@ -584,6 +581,14 @@ namespace Ehr.Controllers
                 {
                     columns.Add(new EZGridColumn() { Name = item.Name, Text = "Tên loại", Order = 3, AllowSorting = true });
                 }
+                if (item.Name.Equals("Price"))
+                {
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Giá", Order = 4, AllowSorting = true });
+                }
+                if (item.Name.Equals("LateCharge"))
+                {
+                    columns.Add(new EZGridColumn() { Name = item.Name, Text = "Phí trễ", Order = 5, AllowSorting = true });
+                }
             }
             //sắp xếp lại các cột theo thứ tự
             columns = columns.OrderBy(c => c.Order).ToList();
@@ -625,6 +630,10 @@ namespace Ehr.Controllers
                     DiskTypes = from c in db.DiskTypes orderby c.Code descending select c;
                 else if (sortProperty.Equals("Name"))
                     DiskTypes = from c in db.DiskTypes orderby c.Name descending select c;
+                else if (sortProperty.Equals("Price"))
+                    DiskTypes = from c in db.DiskTypes orderby c.Price descending select c;
+                else if (sortProperty.Equals("LateCharge"))
+                    DiskTypes = from c in db.DiskTypes orderby c.LateCharge descending select c;
             }
             else
             {
@@ -632,6 +641,10 @@ namespace Ehr.Controllers
                     DiskTypes = from c in db.DiskTypes orderby c.Code ascending select c;
                 else if (sortProperty.Equals("Name"))
                     DiskTypes = from c in db.DiskTypes orderby c.Name ascending select c;
+                else if (sortProperty.Equals("Price"))
+                    DiskTypes = from c in db.DiskTypes orderby c.Price ascending select c;
+                else if (sortProperty.Equals("LateCharge"))
+                    DiskTypes = from c in db.DiskTypes orderby c.LateCharge ascending select c;
             }
             #endregion
 
@@ -639,7 +652,9 @@ namespace Ehr.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 DiskTypes = DiskTypes.Where(c => c.Code.ToString().ToLower().Contains(searchString.ToLower()) ||
-                c.Name.ToString().ToLower().Contains(searchString.ToLower()
+                c.Name.ToString().ToLower().Contains(searchString.ToLower()) ||
+                c.Price.ToString().ToLower().Contains(searchString.ToLower()) ||
+                c.LateCharge.ToString().ToLower().Contains(searchString.ToLower()
                 ));
 
             }
@@ -689,17 +704,23 @@ namespace Ehr.Controllers
         }
 
         [PermissionBasedAuthorize("DISK_MNT")]
-        public JsonResult AddDiskType(int? Id, string Name)
+        public JsonResult AddDiskType(int? Id, double Price,double lateCharge, string Name)
         {
             try
             {
                 if (Id == null)
                 {
                     var lastdisk = unitWork.DiskType.Get().LastOrDefault();
-                    var Code = lastdisk.Id + 1;
+                    var Code = 1;
+                    if (lastdisk != null)
+                    {
+                        Code = lastdisk.Id + 1;
+                    }
                     var disktype = new DiskType();
                     disktype.Code = "L-00" + Code.ToString();
                     disktype.Name = Name;
+                    disktype.Price = Price;
+                    disktype.LateCharge = lateCharge;
                     unitWork.DiskType.Insert(disktype);
                 }
                 else
@@ -708,6 +729,8 @@ namespace Ehr.Controllers
                     if (oldtype != null)
                     {
                         oldtype.Name = Name;
+                        oldtype.Price = Price;
+                        oldtype.LateCharge = lateCharge;
                         unitWork.DiskType.Update(oldtype);
                     }
                     else

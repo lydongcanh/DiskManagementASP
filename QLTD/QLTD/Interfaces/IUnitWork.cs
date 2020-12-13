@@ -25,10 +25,10 @@ namespace Ehr.Interfaces
         IRepository<DiskTitle> DiskTitle { get; }
         IRepository<DiskType> DiskType { get; }
         IRepository<LateCharge> LateCharge { get; }
-        IRepository<Order> Order { get; }
-        IRepository<Rent> Rent { get; }
-        IRepository<RentDetail> RentDetail { get; }
-        IRepository<RentReceipt> RentReceipt { get; }
+        IRepository<OrderLateCharge> Order { get; }
+        IRepository<OrderRent> Rent { get; }
+        IRepository<OrderDetail> RentDetail { get; }
+        IRepository<OrderReceipt> RentReceipt { get; }
         void Commit();
     }
 }

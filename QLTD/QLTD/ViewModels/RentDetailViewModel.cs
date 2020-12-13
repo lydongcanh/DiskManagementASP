@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -29,5 +30,6 @@ namespace Ehr.ViewModels
         public double LateCharge { get; set; }
         public int RentId { get; set; }
         public int RentReceiptId { get; set; }
+        public string Status { get; set; }
     }
 }

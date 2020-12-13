@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Trang chủ";
+    var datenow = DataConverter.DateTime2UI_Full(DateTime.Now);
 }
 @using Ehr.Data;
 @using Ehr.Models;
@@ -7,43 +8,141 @@
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h5>
-                        Trang chủ
-                    </h5>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content-header -->
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-success">
-                <div class="card-header">
-                    <h3 class="card-title">Trang chủ</h3>
+            @using (Ajax.BeginForm("Search", "Home", new AjaxOptions
+            {
+                InsertionMode = InsertionMode.Replace,
+                HttpMethod = "POST",
+                LoadingElementId = "ezloader",
+                //OnSuccess = "updateOK()",
+                // OnFailure = "updateFailed()",
+                UpdateTargetId = "allContent"
+
+            }, new { @id = "searchForm" }))
+            {
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card-tools">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Nhập mã khách hàng, mã đĩa hoặc số điện thoại để tìm" name="searchStrTL" style="border-radius:0px">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit" style="border-radius:0px">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-tools -->
+                </div><br />
+                <div id="allContent">
                 </div>
-                <div class="card-body">
-                 
-                </div>
-                <!-- /.card-body -->
-            </div>
+            }
         </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
 </div>
+<div class="modal fade" id="AddModel" role="dialog" aria-labelledby="AddModel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <b>Thanh toán phí trễ</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-pn">
+                    <div class="card-body">
+                        <input type="hidden" name="IdLC" Id="IdLC" />
+                        <div class="form-group">
+                            <label>Ngày thanh toán</label>
+                            <div class="input-group-prepend" title="Nhấn vào icon để xóa">
+                                <input type="text" id="PayDate" name="PayDate" value="@datenow" class="form-control ez-date-isnull-full">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Khách hàng
+                            </label>
+                            <input type="text" class="form-control" name="CustomerName2" id="CustomerName2" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Tổng phí nợ
+                            </label>
+                            <input type="number" class="form-control" name="Total" id="Total" readonly />
+                        </div>
+                    </div>
+                    <div class="card-footer" style="background-color:transparent">
+                        <button type="submit" class="btn bg-success float-right">Thanh toán</button>
+                        <button type="button" class="btn  btn-warning  " data-dismiss="modal" aria-label="Close" id="btn-ts">Huỷ</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ezloader" style="display:none;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src="~/Content/img/loader.gif" />
+</div>
+
 <!-- /.content-wrapper -->
 <!-- jQuery -->
 <script>
     var flag = "/";
+</script>
+<script>
+    $(document).ready(function (e) {
+        $('#searchForm').submit();
+    });
+    function Payment(Id, Name, Total) {
+        $('#IdLC').val(Id);
+        $('#CustomerName2').val(Name);
+        $('#Total').val(Total);
+        $('#AddModel').modal('show');
+    }
+    $("#form-add-pn").submit(function (e) {
+        e.preventDefault();
+        var serializedForm = $(this).serializeArray();
+        console.log(serializedForm);
+        var PayDate = $("#PayDate").val();
+        var date = PayDate.substring(0, 2);
+        var month = PayDate.substring(3, 5);
+        var year = PayDate.substring(6, 10);
+        var newrentdate = month + "/" + date + "/" + year
+        var Id = $("#IdLC").val();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: Id,
+                PayDate: newrentdate,
+            },
+            url: "/RentDisk/AddOrderLateCharge",
+            success: function (item) {
+                if (item.success) {
+                    toastr.success(item.message);
+                    $('#AddModel').modal('hide');
+                    $('#searchForm').submit();
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Lưu dữ liệu không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
+    });
+
 </script>
 
 <!-- fullCalendar -->

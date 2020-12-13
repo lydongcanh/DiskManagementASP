@@ -188,7 +188,11 @@ namespace Ehr.Controllers
                 if (Id == null)
                 {
                     var lastCus = unitWork.Customer.Get().LastOrDefault();
-                    var Code = lastCus.Id + 1;
+                    var Code = 1;
+                    if (lastCus != null)
+                    {
+                        Code = lastCus.Id + 1;
+                    }
                     var customer = new Customer();
                     customer.Code = "KH-00" + Code.ToString() ;
                     customer.Name = Name;

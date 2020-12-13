@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Ehr.Models
 {
-    public class Order
+    public class OrderLateCharge
     {
         public int Id { get; set; }
         /// <summary>

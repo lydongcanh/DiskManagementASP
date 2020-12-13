@@ -1,0 +1,195 @@
+﻿
+@using System.Linq
+@using Ehr.Common.Constraint
+@using Ehr.Models
+@using Ehr.Common.UI;
+@using System.ComponentModel.DataAnnotations;
+@using Ehr.Auth;
+@{
+    ViewBag.Title = "Giữ đĩa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Ehr.Data.QLTDDBContext db = new Ehr.Data.QLTDDBContext();
+    var user = db.Users.Where(x => x.Id == this.User.UserId).FirstOrDefault();
+    var datenow = DataConverter.DateTime2UI_Full(DateTime.Now);
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h5>
+                        Giữ đĩa
+                    </h5>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="~/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Giữ đĩa</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="card">
+            <div class="p-0">
+                <form id="form-add-title">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-7">
+
+                                <div class="form-group">
+                                    <label>
+                                        Khách hàng
+                                    </label>
+                                    <select id="Customer" class="form-control select2-success select2" name="Customer" data-dropdown-css-class="select2-green">
+                                        <option value="-1" selected>- Chọn khách hàng -</option>
+                                        @foreach (var item in ViewBag.Customer)
+                                        {
+                                            <option value="@item.Id">@item.Code - @item.PhoneNumber - @item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ngày đặt </label>
+                                    <div class="input-group-prepend" title="Nhấn vào icon để xóa">
+                                        <input type="text" id="HoldDate" name="HoldDate" value="@datenow" class="form-control ez-date-isnull-full">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        Tên tiêu đề
+                                    </label>
+                                    <select id="DiskTitle" class="form-control select2-success select2" name="DiskTitle" data-dropdown-css-class="select2-green">
+                                        <option value="-1" selected>- Chọn tiêu đề -</option>
+                                        @foreach (var item in ViewBag.DiskTitles)
+                                        {
+                                            <option value="@item.Id">@item.Code - @item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        Mã đĩa
+                                    </label>
+                                    <select id="DiskId" class="form-control select2-success select2" name="DiskId" data-dropdown-css-class="select2-green">
+                                        <option value="-1" selected>- Chọn đĩa -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <div>
+                                                <div>
+                                                    <img src="/Images/cd-303303_1280.png" id="Image_dis" style="width:350px;height:350px" />
+                                                    <input type="hidden" id="Image_hidden" name="Image_img" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="background-color:transparent;">
+                        <button type="submit" class="btn bg-success float-right">Lưu phiếu giữ</button>
+                        <button type="button" class="btn  btn-warning  " onclick="ResetForm();">Hủy thao tác</button>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<script>
+    var flag = "/HoldDisk/Index"
+</script>
+<script>
+    $("#DiskTitle").change(function () {
+        var disktitle = $("#DiskTitle").val();
+        $('#DiskId').find('option').not(':first').remove();
+        if (disktitle != "-1" && disktitle != "") {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+                    Id: disktitle
+                },
+                url: "/RentDisk/LoadDiskByTitle",
+                success: function (item) {
+                    if (item.Disk != null) {
+                        $("#DiskId").select2({
+                            miniumInputLength: 2,
+                            data: item.Disk
+                        });
+                    }
+                    if (item.Image != null) {
+                        $("#Image_dis").attr("src", item.Image);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
+    $("#form-add-title").submit(function (e) {
+        e.preventDefault();
+        var serializedForm = $(this).serializeArray();
+        var disk = $("#DiskId").val();
+        var customer = $("#Customer").val();
+        var HoldDate = $("#HoldDate").val();
+        var date = HoldDate.substring(0, 2);
+        var month = HoldDate.substring(3, 5);
+        var year = HoldDate.substring(6, 10);
+        var newholddate = month + "/" + date + "/" + year
+        if (disk == "-1" && disk == "") {
+            toastr.warning("Vui lòng chọn đĩa", "Warning");
+        } else if (customer == "-1" && customer == "") {
+            toastr.warning("Vui lòng chọn khách hàng", "Warning");
+        } else {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+                    HoldDate: newholddate,
+                    customerId: customer,
+                    diskId: disk,
+                },
+                url: "/HoldDisk/AddHoldDisk",
+                success: function (item) {
+                    if (item.success) {
+                        toastr.success(item.message);
+                        ResetForm();
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        toastr.warning(item.message);
+                    }
+                },
+                error: function (err) {
+                    setTimeout(function () {
+                        toastr.error("Lưu dữ liệu không thành công", "Failed");
+                    }, 500);
+                    console.log(err);
+                }
+            });
+        }
+    });
+
+    function ResetForm() {
+        $('#DiskTitle').val('-1').trigger('change');
+        $('#DiskId').val('-1').trigger('change');
+        $('#Customer').val('-1').trigger('change');
+        $("#form-add-title")[0].reset();
+        $("#Image_dis").attr("src", "/Images/cd-303303_1280.png");
+    }
+</script>

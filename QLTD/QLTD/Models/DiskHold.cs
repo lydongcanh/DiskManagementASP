@@ -17,8 +17,8 @@ namespace Ehr.Models
         /// </summary>
         public virtual Customer Customer { get; set; }
         /// <summary>
-        /// Tiêu đề đặt
+        /// Đĩa
         /// </summary>
-        public virtual DiskTitle DiskTitle { get; set; }
+        public virtual Disk Disk { get; set; }
     }
 }

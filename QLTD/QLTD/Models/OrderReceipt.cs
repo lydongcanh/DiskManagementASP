@@ -6,32 +6,29 @@ using System.Web;
 
 namespace Ehr.Models
 {
-    public class Rent
+    public class OrderReceipt
     {
         public int Id { get; set; }
         /// <summary>
-        /// Mã phiếu thuê
+        /// Mã phiếu trả
         /// </summary>
         public string Code { get; set; }
         /// <summary>
-        /// ngày trả
+        /// Ngày trả đĩa
         /// </summary>
-        public int RentLenght { get; set; }
-        /// <summary>
-        /// Ngày thuê
-        /// </summary>
-        public DateTime RentDate { get; set; }
+        public DateTime ReceiptDate { get; set; }
         /// <summary>
         /// khách hàng
         /// </summary>
         public virtual Customer Customer { get; set; }
         /// <summary>
-        /// khách hàng
+        /// trạng thái
         /// </summary>
-        public RentStatus Status { get; set; }
+        public ReceiptStatus Status { get; set; }
+
         /// <summary>
         /// chi tiết phiếu thuê
         /// </summary>
-        public virtual ICollection<RentDetail> RentDetails { get; set; }
+        public virtual ICollection<OrderDetail> RentDetails { get; set; }
     }
 }

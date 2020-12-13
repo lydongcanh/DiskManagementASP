@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,8 +18,12 @@ namespace Ehr.Models
         /// </summary>
         public double ChargeOwed { get; set; }
         /// <summary>
+        /// trạng thái
+        /// </summary>
+        public LateChargeStatus Status { get; set; }
+        /// <summary>
         /// Phiếu trả
         /// </summary>
-        public virtual RentReceipt RentReceipt { get; set; }
+        public virtual OrderReceipt RentReceipt { get; set; }
     }
 }

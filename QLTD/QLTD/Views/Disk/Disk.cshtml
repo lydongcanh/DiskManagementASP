@@ -131,18 +131,22 @@
                                                     </td>
 
                                                     <td class="project-actions text-right">
+                                                        @if (i.Status == DiskStatus.HOLDING)
+                                                        {
+                                                            <button onclick="CancelHold(@i.Id)" class="btn btn-primary btn-sm">
+                                                                <i class="fa fa-window-close">
+                                                                </i> <span>Huỷ giữ</span>
+                                                            </button>
+                                                        }
                                                         @if (user.Roles.Any(x => x.IsRoot == YesNo.YES))
                                                         {
-                                                            if (i.Status == DiskStatus.WAITING)
-                                                            {
-                                                                <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
-                                                                    <i class="fas fa-trash">
-                                                                    </i> <span>Xoá</span>
-                                                                </button>
-                                                            }
+                                                            <button onclick="DeleteRent(@i.Id)" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-trash">
+                                                                </i> <span>Xoá</span>
+                                                            </button>
                                                         }
                                                         &nbsp;&nbsp;
-                                                        <button onclick="EditAntimi(@i.Id,'@i.DiskTitle.Id','@i.Status')" class="btn btn-success btn-sm">
+                                                        <button onclick="EditAntimi(@i.Id,'@i.DiskTitle.Id','@i.Status')" class="btn btn-success btn-sm" style="display:none">
                                                             <i class="fas fa-pencil-alt">
                                                             </i> <span>Sửa</span>
                                                         </button>
@@ -162,13 +166,16 @@
             <div class="col-md-3">
                 <div class="card">
                     <form id="form-add-disk">
+                        <div class="card-header" style="background: #14a33e;">
+                            <h3 class="card-title" style="font-weight:400;color:rgb(255, 255, 255)">Thêm đĩa</h3>
+                        </div>
                         <div class="card-body">
                             <input type="hidden" name="Id" id="Id" />
                             <div class="form-group" style="display:none">
                                 <label>
                                     Mã đĩa
                                 </label>
-                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã đĩa" readonly/>
+                                <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã đĩa" readonly />
                             </div>
                             <div class="form-group">
                                 <label>
@@ -181,6 +188,12 @@
                                         <option value="@item.Id">@item.Name</option>
                                     }
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    Số lượng
+                                </label>
+                                <input type="number" class="form-control" name="Number" id="Number" placeholder="Nhập số lượng đĩa" />
                             </div>
                             <div class="form-group" style="display:none">
                                 <label>
@@ -251,6 +264,7 @@
         var serializedForm = $(this).serializeArray();
         var id = $('#Id').val();
         var DiskTitle = $('#DiskTitle').val();
+        var Number = $('#Number').val();
         var Status = serializedForm[3].value;
         if (Code !== "") {
             $.ajax({
@@ -259,6 +273,7 @@
                 data: {
                     Id: id,
                     IdTitle: DiskTitle,
+                    Number: Number,
                     status: Status
                 },
                 url: "/Disk/AddDisk",
@@ -333,4 +348,31 @@
             }
         });
     }
+    function CancelHold(id) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: id,
+            },
+            url: "/Disk/CancelHold",
+            success: function (item) {
+                if (item.success) {
+                    toastr.success(item.message);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Huỷ không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
+    }
+    
 </script>

@@ -49,31 +49,6 @@
                                 </label>
                                 <input type="text" class="form-control" name="Name" id="Name" placeholder="Nhập tên tiêu đề" />
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group" style="display:none">
-                                        <label>
-                                            Mã tiêu đề
-                                        </label>
-                                        <input type="text" class="form-control" name="Code" id="Code" placeholder="Nhập mã tiêu đề" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label>
-                                            Đơn giá
-                                        </label>
-                                        <input type="number" class="form-control" name="Price" id="Price" placeholder="Nhập đơn giá" />
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            Phí trễ
-                                        </label>
-                                        <input type="number" class="form-control" name="LateCharge" id="LateCharge" placeholder="Nhập đơn giá" />
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="form-group">
                                 <label>
                                     Loại
@@ -261,17 +236,11 @@
                                             @i.DiskType.Name
                                         </td>
                                         <td>
-                                            @i.Price
-                                        </td>
-                                        <td>
-                                            @i.LateCharge
-                                        </td>
-                                        <td>
                                             <span class="badge @bg">@state</span>
                                         </td>
 
                                         <td class="project-actions text-right">
-                                            <button onclick="EditAntimi(@i.Id,'@i.Name','@i.Price','@i.LateCharge','@i.Description','@i.Status','@i.DiskType.Id','@i.Image')" class="btn btn-success btn-sm">
+                                            <button onclick="EditAntimi(@i.Id,'@i.Name','@i.Description','@i.Status','@i.DiskType.Id','@i.Image')" class="btn btn-success btn-sm">
                                                 <i class="fas fa-pencil-alt">
                                                 </i><span>Sửa</span>
                                             </button>
@@ -370,13 +339,11 @@
     $("#AddTitle").on('hide.bs.modal', function () {
         ResetForm();
     });
-    function EditAntimi(id, Name, Price, LateCharge, Description, Status, IdType,Image) {
+    function EditAntimi(id, Name,Description, Status, IdType,Image) {
         $("#form-add-title")[0].reset();
         $("#AddTitle").modal('show');
         var id = $('#Id').val(id);
         var Name = $('#Name').val(Name);
-        var Price = $('#Price').val(Price);
-        var LateCharge = $('#LateCharge').val(LateCharge);
         var Description = $('#Description').val(Description);
         $("#Image_dis").attr("src", Image);
         $('#DiskType').val(IdType).trigger('change');

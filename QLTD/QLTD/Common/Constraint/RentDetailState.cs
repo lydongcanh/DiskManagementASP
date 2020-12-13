@@ -6,13 +6,11 @@ using System.Web;
 
 namespace Ehr.Common.Constraint
 {
-    public enum RentStatus
+    public enum RentDetailState
     {
         [Display(Name = "Đang thuê")]
-        RENTING = 0,
-        [Display(Name = "Trả đĩa thiếu")]
-        PENDING = 1,
+        WAITING = 0,
         [Display(Name = "Đã trả đĩa")]
-        DONE = 2,
+        DONE = 1,
     }
 }

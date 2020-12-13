@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Ehr.Common.Constraint;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Ehr.Models
 {
-    public class RentDetail
+    public class OrderDetail
     {
         public int Id { get; set; }
         /// <summary>
@@ -24,7 +25,11 @@ namespace Ehr.Models
         /// Phí trễ hạn
         /// </summary>
         public double LateCharge { get; set; }
-        public virtual Rent Rent { get; set; }
-        public virtual RentReceipt RentReceipt { get; set; }
+        /// <summary>
+        /// Trạng thái
+        /// </summary>
+        public RentDetailState Status { get; set; }
+        public virtual OrderRent Rent { get; set; }
+        public virtual OrderReceipt RentReceipt { get; set; }
     }
 }

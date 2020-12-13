@@ -1,0 +1,340 @@
+﻿
+@using Ehr.Models
+@using Ehr.ViewModels
+@using Ehr.Common.Constraint
+@using Ehr.Common.UI;
+@using System.ComponentModel.DataAnnotations;
+@using Ehr.Auth;
+@{
+    var Customer = ViewBag.Customer as Customer;
+    var Rents = ViewBag.Rents as List<OrderRent>;
+    var OrderLates = ViewBag.OrderLates as List<LateCharge>;
+    var Historys = ViewBag.History as List<HistoryViewModel>;
+    var HoldDisks = ViewBag.HoldDisks as List<DiskHold>;
+}
+<div class="row">
+    @if (ViewBag.Message != "")
+    {
+        @ViewBag.Message
+    }
+    else
+    {
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-success card-outline">
+                <div class="card-header" style="background: #14a33e;">
+                    <h3 class="card-title" style="font-weight:400;color:rgb(255, 255, 255)">Thông tin khách hàng</h3>
+
+                </div>
+                <div class="card-body box-profile">
+
+                    <h3 class="profile-username text-center">@Customer.Name</h3>
+
+                    <p class="text-muted text-center">@Customer.Code</p>
+
+                    <ul class="list-group list-group-unbordered mb-3">
+                        @*<li class="list-group-item">
+                                <b>Tuổi</b> <a class="float-right">22 tuổi</a>
+                            </li>*@
+                        <li class="list-group-item">
+                            <b>Mã khách hàng</b> <a class="float-right">@Customer.Code</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Số điện thoại</b> <a class="float-right">@Customer.PhoneNumber</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Địa chỉ</b><br /><br /> <a class="float-right text-left">@Customer.Address</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header p-2">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item"><a class="nav-link active" href="#rent" data-toggle="tab">Đơn thuê</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#order" data-toggle="tab">Phí nợ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#hold" data-toggle="tab">Đĩa đang giữ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#history" data-toggle="tab">Lịch sử đĩa thuê</a></li>
+                    </ul>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="active tab-pane" id="rent">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px">#</th>
+                                        <th>Mã phiếu thuê</th>
+                                        <th>Ngày thuê</th>
+                                        <th>Hạn thuê</th>
+                                        <th>Trạng thái</th>
+                                        <th style="width: 15%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int dem = 1;
+                                    }
+                                    @foreach (var i in Rents)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem
+                                                @{dem++;}
+                                            </td>
+                                            @{
+                                                var datea = DataConverter.DateTime2UI_Full(i.RentDate);
+                                                var dateareceipt = DataConverter.DateTime2UI_Full(i.ReceiptDate);
+                                                var state = i.Status.GetAttribute<DisplayAttribute>().Name;
+                                                var bg = "";
+                                                if (i.Status == RentStatus.RENTING)
+                                                {
+                                                    bg = "bg-warning";
+                                                }
+                                                if (i.Status == RentStatus.PENDING)
+                                                {
+                                                    bg = "bg-primary";
+                                                }
+                                                else if (i.Status == RentStatus.DONE)
+                                                {
+                                                    bg = "bg-success";
+                                                }
+                                            }
+                                            <td>
+                                                @i.Code
+                                            </td>
+                                            <td>
+                                                @datea
+                                            </td>
+                                            <td>
+                                                @dateareceipt
+                                            </td>
+                                            <td>
+                                                <span class="badge @bg">@state</span>
+                                            </td>
+                                            <td class="project-actions text-right">
+                                                <a href="../../RentDisk/ReceiptDisk?id=@i.Id" class="btn btn-success btn-sm">
+                                                    <span>Trả đĩa</span>
+                                                    <i class="fas fa-arrow-circle-right">
+                                                    </i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="order">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px">#</th>
+                                        <th>Mã phí nợ</th>
+                                        <th>Ngày trả đĩa</th>
+                                        <th>Tổng phí</th>
+                                        <th style="width: 20%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int demlc = 1;
+                                    }
+                                    @foreach (var i in OrderLates)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @demlc
+                                                @{demlc++;}
+                                            </td>
+                                            @{
+                                                var datea = DataConverter.DateTime2UI_Full(i.RentReceipt.ReceiptDate);
+                                            }
+                                            <td>
+                                                @i.Code
+                                            </td>
+                                            <td>
+                                                @datea
+                                            </td>
+                                            <td>
+                                                @i.ChargeOwed
+                                            </td>
+                                            <td class="project-actions text-right">
+                                                <a onclick="Payment(@i.Id,'@i.RentReceipt.Customer.Name','@i.ChargeOwed')" class="btn btn-success btn-sm" style="color:white">
+                                                    <span>Thanh toán</span>
+                                                    <i class="fas fa-arrow-circle-right">
+                                                    </i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="hold">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px">#</th>
+                                        <th>Mã đĩa</th>
+                                        <th>Tên tiêu đề</th>
+                                        <th>Ngày giữ đĩa</th>
+                                        <th style="width: 18%">
+                                        </th>
+                                        @*<th style="width: 18%">
+                                        </th>*@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int demh = 1;
+                                    }
+                                    @foreach (var i in HoldDisks)
+                                    {
+                                    <tr>
+                                        <td>
+                                            @demh
+                                            @{demh++;}
+                                        </td>
+                                        @{
+                                            var datea = DataConverter.DateTime2UI_Full(i.HoldDate);
+                                        }
+                                        <td>
+                                            @i.Disk.Code
+                                        </td>
+                                        <td>
+                                            @i.Disk.DiskTitle.Name
+                                        </td>
+                                        <td>
+                                            @datea
+                                        </td>
+                                        <td class="project-actions text-right">
+                                            <a onclick="CancelHold(@i.Disk.Id)" class="btn btn-danger btn-sm"style="color:white">
+                                                <i class="fa fa-window-close">
+                                                </i> <span>Huỷ giữ</span>
+                                            </a>
+                                        </td>
+                                        @*<td class="project-actions text-right">
+                                            <a onclick="EditRent('@i.Customer.Id','@i.Disk.DiskTitle.Id','@i.Disk.Id','@i.Disk.DiskTitle.Image')" class="btn btn-success btn-sm"style="color:white">
+                                                <span>Thuê đĩa</span>
+                                                <i class="fas fa-arrow-circle-right">
+                                                </i>
+                                            </a>
+                                        </td>*@
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                        <div class="tab-pane" id="history">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px">#</th>
+                                        <th>Ảnh</th>
+                                        <th>Tên đĩa</th>
+                                        <th>Ngày thuê</th>
+                                        <th>Ngày trả</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int dem1 = 1;
+                                    }
+                                    @foreach (var i in Historys)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @dem1
+                                                @{dem1++;}
+                                            </td>
+                                            @{
+                                                var datea = DataConverter.DateTime2UI_Full(i.DateRent);
+                                                var DateReceipt = "-";
+                                                if (i.DateReceipt != null && i.DateReceipt != DateTime.MinValue)
+                                                {
+                                                    DateReceipt = DataConverter.DateTime2UI_Full(i.DateReceipt);
+                                                }
+                                                var state = i.State.GetAttribute<DisplayAttribute>().Name;
+                                                var bg = "";
+                                                if (i.State == RentDetailState.WAITING)
+                                                {
+                                                    bg = "bg-warning";
+                                                }
+                                                else if (i.State == RentDetailState.DONE)
+                                                {
+                                                    bg = "bg-success";
+                                                }
+                                            }
+                                            <td>
+                                                <img src="@i.Image" id="Image_dis" style="width:50px;height:50px" />
+                                            </td>
+                                            <td>
+                                                @i.Name
+                                            </td>
+                                            <td>
+                                                @datea
+                                            </td>
+                                            <td>
+                                                @DateReceipt
+                                            </td>
+                                            <td>
+                                                <span class="badge @bg">@state</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div><!-- /.card-body -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+    }
+</div>
+
+
+<script>
+    function CancelHold(id) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                Id: id,
+            },
+            url: "/Disk/CancelHold",
+            success: function (item) {
+                if (item.success) {
+                    toastr.success(item.message);
+                    $('#searchForm').submit();
+                } else {
+                    toastr.warning(item.message);
+                }
+            },
+            error: function (err) {
+                setTimeout(function () {
+                    toastr.error("Huỷ không thành công", "Failed");
+                }, 500);
+                console.log(err);
+            }
+        });
+    }
+</script>

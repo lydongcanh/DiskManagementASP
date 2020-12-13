@@ -1,0 +1,94 @@
+﻿@using System.Linq
+@using Ehr.Common.Constraint
+@using Ehr.Models
+@using Ehr.Common.UI;
+@using System.ComponentModel.DataAnnotations;
+@using Ehr.Auth;
+@model IEnumerable<Ehr.Models.OrderRent>
+<div class="card">
+    <div class="card-header" style="background: #14a33e;">
+        <h3 class="card-title" style="font-weight:400;color:rgb(255, 255, 255)">Danh sách phiếu thuê thanh toán hôm nay</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Mã phiếu thuê</th>
+                    <th>Mã khách hàng</th>
+                    <th>Tên khách hàng</th>
+                    <th>Số điện thoại</th>
+                    <th>Ngày thuê</th>
+                    <th>Hạn thuê</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 15%">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int dem = 1;
+                }
+                @foreach (var i in Model)
+                {
+                    <tr>
+                        <td>
+                            @dem
+                            @{dem++;}
+                        </td>
+                        @{
+                            var datea = DataConverter.DateTime2UI_Full(i.RentDate);
+                            var dateareceipt = DataConverter.DateTime2UI_Full(i.RentDate.AddDays(i.RentLenght));
+                            var state = i.Status.GetAttribute<DisplayAttribute>().Name;
+                            var bg = "";
+                            if (i.Status == RentStatus.RENTING)
+                            {
+                                bg = "bg-warning";
+                            }
+                            if (i.Status == RentStatus.PENDING)
+                            {
+                                bg = "bg-primary";
+                            }
+                            else if (i.Status == RentStatus.DONE)
+                            {
+                                bg = "bg-success";
+                            }
+                        }
+                        <td>
+                            @i.Code
+                        </td>
+                        <td>
+                            @i.Customer.Code
+                        </td>
+                        <td>
+                            @i.Customer.Name
+                        </td>
+                        <td>
+                            @i.Customer.PhoneNumber
+                        </td>
+                        <td>
+                            @datea
+                        </td>
+                        <td>
+                            @dateareceipt
+                        </td>
+                        <td>
+                            <span class="badge @bg">@state</span>
+                        </td>
+                        <td class="project-actions text-right">
+                            @if (i.Status != RentStatus.DONE)
+                            {
+                                <a href="../../RentDisk/ReceiptDisk?id=@i.Id" class="btn btn-success btn-sm">
+                                    <span>Trả đĩa</span>
+                                    <i class="fas fa-arrow-circle-right">
+                                    </i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

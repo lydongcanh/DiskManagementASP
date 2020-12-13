@@ -19,10 +19,10 @@ namespace Ehr.Bussiness
         private BaseRepository<DiskTitle> _disktitle;
         private BaseRepository<DiskType> _disktype;
         private BaseRepository<LateCharge> _latecharge;
-        private BaseRepository<Order> _order;
-        private BaseRepository<Rent> _rent;
-        private BaseRepository<RentDetail> _rentdetail;
-        private BaseRepository<RentReceipt> _rentreceipt;
+        private BaseRepository<OrderLateCharge> _order;
+        private BaseRepository<OrderRent> _rent;
+        private BaseRepository<OrderDetail> _rentdetail;
+        private BaseRepository<OrderReceipt> _rentreceipt;
         #endregion
 
         public UnitWork(QLTDDBContext context)
@@ -40,10 +40,10 @@ namespace Ehr.Bussiness
         public IRepository<DiskTitle> DiskTitle => _disktitle ?? (_disktitle = new BaseRepository<DiskTitle>(_context));
         public IRepository<DiskType> DiskType => _disktype ?? (_disktype = new BaseRepository<DiskType>(_context));
         public IRepository<LateCharge> LateCharge => _latecharge ?? (_latecharge = new BaseRepository<LateCharge>(_context));
-        public IRepository<Order> Order => _order ?? (_order = new BaseRepository<Order>(_context));
-        public IRepository<Rent> Rent => _rent ?? (_rent = new BaseRepository<Rent>(_context));
-        public IRepository<RentDetail> RentDetail => _rentdetail ?? (_rentdetail = new BaseRepository<RentDetail>(_context));
-        public IRepository<RentReceipt> RentReceipt => _rentreceipt ?? (_rentreceipt = new BaseRepository<RentReceipt>(_context));
+        public IRepository<OrderLateCharge> Order => _order ?? (_order = new BaseRepository<OrderLateCharge>(_context));
+        public IRepository<OrderRent> Rent => _rent ?? (_rent = new BaseRepository<OrderRent>(_context));
+        public IRepository<OrderDetail> RentDetail => _rentdetail ?? (_rentdetail = new BaseRepository<OrderDetail>(_context));
+        public IRepository<OrderReceipt> RentReceipt => _rentreceipt ?? (_rentreceipt = new BaseRepository<OrderReceipt>(_context));
         #endregion
 
         public void Commit()
